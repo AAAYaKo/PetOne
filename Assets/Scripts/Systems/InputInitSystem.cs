@@ -30,29 +30,31 @@ namespace Client
                     //Prepare Data For Job
                     //Inputs
                     Vector2 input = x.ReadValue<Vector2>();
-                    var up = new NativeArray<float3>(count, Allocator.Persistent);
-                    var view = new NativeArray<quaternion>(count, Allocator.Persistent);
+                    var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
                     foreach (var i in _filter)
                     {
-                        up[i] = _filter.Get2(i).Value.up;
-                        view[i] = _filter.Get3(i).Entity.Get<RealTransform>().Value.rotation;
+                        Transform transform = _filter.Get2(i).Value;
+                        CombinedInput combinedInput = new CombinedInput
+                        {
+                            Up = transform.up,
+                            Rotation = _filter.Get3(i).Entity.Get<RealTransform>().Value.rotation
+                        };
+                        combinedInputs[i] = combinedInput;
                     }
                     //OutPuts
-                    var rotation = new NativeArray<quaternion>(count, Allocator.Persistent);
-                    var translation = new NativeArray<float3>(1, Allocator.Persistent);
+                    var results = new NativeArray<RigidTransform>(count, Allocator.Persistent);
 
                     //Do Job
                     var job = new CalculateJob
                     {
                         Direction = input,
-                        PlayerUp = up,
+                        CombinedInput = combinedInputs,
                         CameraRight = _player.CameraTransform.right,
-                        ViewRotation = view,
-                        Translation = translation,
-                        Rotation = rotation
+                        CameraForward = _player.CameraTransform.forward,
+                        Result = results
                     };
                     job
-                    .Schedule(view.Length, 1)
+                    .Schedule(count, 1)
                     .Complete();
 
                     //Affect
@@ -62,14 +64,12 @@ namespace Client
                         ref EcsEntity entity = ref _filter.Get3(i).Entity;
                         ref TargetRotation targetRotaion = ref entity.Get<TargetRotation>();
 
-                        physicTranslation.Value = delta * speed * translation[0];
-                        targetRotaion.Value = rotation[0];
+                        physicTranslation.Value = delta * speed * results[i].pos;
+                        targetRotaion.Value = results[i].rot;
                     }
 
-                    translation.Dispose();
-                    rotation.Dispose();
-                    view.Dispose();
-                    up.Dispose();
+                    results.Dispose();
+                    combinedInputs.Dispose();
                 }
             };
             _inputs.Player.Move.canceled += _ =>
@@ -117,11 +117,13 @@ namespace Client
             //Inputs
             [ReadOnly] public float2 Direction; //Player Input
             [ReadOnly] public float3 CameraRight;
-            [ReadOnly] public NativeArray<float3> PlayerUp;
-            [ReadOnly] public NativeArray<quaternion> ViewRotation;
+            [ReadOnly] public float3 CameraForward;
+            [ReadOnly] public NativeArray<CombinedInput> CombinedInput;
             //Outputs
-            public NativeArray<float3> Translation;
-            public NativeArray<quaternion> Rotation;
+            ///<summary>
+            /// Position = Translation
+            ///</summary>
+            public NativeArray<RigidTransform> Result;
 
             public void Execute(int index)
             {
@@ -133,20 +135,41 @@ namespace Client
             {
                 bool2 isZero = Direction == float2.zero;
                 if (isZero.x && isZero.y)
-                    Rotation[index] = ViewRotation[index];
-
-                Rotation[index] = quaternion.LookRotation(Translation[index], PlayerUp[index]);
+                {
+                    RigidTransform outPut = Result[index];
+                    outPut.rot = CombinedInput[index].Rotation;
+                    Result[index] = outPut;
+                }
+                else
+                {
+                    RigidTransform outPut = Result[index];
+                    outPut.rot = quaternion.LookRotation(outPut.pos, CombinedInput[index].Up);
+                    Result[index] = outPut;
+                }
             }
 
             private void CalculateTranslation(int index)
             {
-                float3 forward = math.cross(CameraRight, PlayerUp[index]);
-                quaternion rotationAngle = Calculate.FromToRotation(math.forward(), forward);
+                float3 forward = ProjetOnPlain(CameraForward, CombinedInput[index].Up) * Direction.y;
+                float3 right = ProjetOnPlain(CameraRight, CombinedInput[index].Up) * Direction.x;
 
-                float3 translation = new float3(Direction.x, 0, Direction.y);
+                float3 translation = right + forward;
 
-                Translation[0] = math.rotate(rotationAngle, translation);
+                RigidTransform outPut = Result[index];
+                outPut.pos = translation;
+                Result[index] = outPut;
             }
+
+            private float3 ProjetOnPlain(float3 vector, float3 normal)
+            {
+                return vector - math.project(vector, normal);
+            }
+        }
+
+        private struct CombinedInput
+        {
+            public float3 Up;
+            public quaternion Rotation;
         }
     }
 }
