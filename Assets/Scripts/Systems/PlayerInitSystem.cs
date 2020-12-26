@@ -8,8 +8,7 @@ namespace Client
         // auto-injected fields.
         private readonly EcsWorld _world = null;
         private readonly PlayerTag _player = null;
-        //Not Injected
-        [EcsIgnoreInject] private readonly float _defaulFactor = 1;
+        private readonly InjectData _injectData = null;
 
         public void Init()
         {
@@ -26,7 +25,7 @@ namespace Client
         private void GravityAttractorInit(EcsEntity player)
         {
             ref NGravityAttractor attractor = ref player.Get<NGravityAttractor>();
-            attractor.GravityFactor = _defaulFactor;
+            attractor.GravityFactor = _injectData.DefaulFactor;
             player.Get<ChangeSourceTag>();
         }
 

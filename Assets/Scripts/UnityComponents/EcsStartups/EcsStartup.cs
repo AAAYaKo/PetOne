@@ -5,21 +5,16 @@ namespace Client
 {
     sealed class EcsStartup : MonoBehaviour
     {
-        [SerializeField] private float _speed = 5;
-        [SerializeField] private float _slerpSpeed = 10;
-        [SerializeField] private float _slerpGravitySpeed = 10;
-        [SerializeField] private float _jumpForce = 7;
-        [SerializeField] private float _radiusOfGroundScan = 0.5f;
-        [SerializeField] private float _newGravitySourceScanRadiuce = 10;
-        [SerializeField] private int _gravityLayer = 7;
+        [SerializeField] private InjectData _injectData;
+        [SerializeField] private LayerMask _gravityLayer = 7;
 
         private EcsWorld _world;
         private EcsSystems _update;
         private EcsSystems _fixedUpdate;
+
         private PlayerTag _player;
         private Inputs _inputs;
         private NGravitySourceTag[] _sources;
-        private CustomGravityService _gravityService;
 
 
         private void Awake()
@@ -27,7 +22,6 @@ namespace Client
             _inputs = new Inputs();
             _player = FindObjectOfType<PlayerTag>();
             _sources = FindObjectsOfType<NGravitySourceTag>();
-            _gravityService = new CustomGravityService(_newGravitySourceScanRadiuce, _gravityLayer);
         }
 
         private void Start()
@@ -53,26 +47,26 @@ namespace Client
                 .OneFrame<ForceImpulse>()
 
                 // inject
-                .Inject(_inputs)
-                .Inject(_speed)
-                .Inject(_slerpSpeed)
                 .Inject(_gravityLayer)
-                .Inject(_gravityService)
-                .Inject(_jumpForce)
-                .Inject(_player);
+                .Inject(_injectData)
+                .Inject(_player)
+                .Inject(_inputs);
 
             _fixedUpdate
                 // register systems
                 .Add(new NGravitySourcesInit())
                 .Add(new NGravityRotate())
+                .Add(new ChangeNGravitySource())
                 .Add(new NGravityAffectSystem())
                 .Add(new NGravityAttractForce())
                 .Add(new PhysicTranslationSystem())
 
+                // register one-frame components
+                .OneFrame<ChangeSourceTag>()
+
                 // inject service instances
                 .Inject(_gravityLayer)
-                .Inject(_gravityService)
-                .Inject(_radiusOfGroundScan)
+                .Inject(_injectData)
                 .Inject(_sources);
 
             _update.ProcessInjects();

@@ -44,7 +44,6 @@ namespace Client
 
                 // register one-frame components
                 .OneFrame<ChangeSourceTag>()
-                // .OneFrame<TestComponent2> ()
 
                 // inject service instances
                 .Inject(_injectData)

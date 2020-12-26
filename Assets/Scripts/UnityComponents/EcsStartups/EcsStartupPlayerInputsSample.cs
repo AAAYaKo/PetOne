@@ -37,12 +37,8 @@ namespace Client
             _systems
                 // register your systems
                 .Add(new PlayerInitSystem())
-                .Add (new InputInitSystem())
+                .Add(new InputInitSystem())
                 .Add(new SlerpRotateSystem())
-
-                // register one-frame components
-                // .OneFrame<TestComponent1> ()
-                // .OneFrame<TestComponent2> ()
 
                 // inject service instances
                 .Inject(_inputs)
@@ -53,15 +49,6 @@ namespace Client
             _fixedSystems
                 // register your systems
                 .Add(new PhysicTranslationSystem());
-            // .Add (new TestSystem2 ())
-
-                // register one-frame components
-            // .OneFrame<TestComponent1> ()
-            // .OneFrame<TestComponent2> ()
-
-               // inject service instances
-            // .Inject (new CameraService ())
-            // .Inject (new NavMeshSupport ())
 
             _systems.ProcessInjects();
             _fixedSystems.ProcessInjects();
