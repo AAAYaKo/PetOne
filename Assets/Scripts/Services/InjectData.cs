@@ -8,6 +8,7 @@ namespace Client
         public float RadiusOfGroundScan;
         public float NewGravitySourceScanRadiuce;
         public float SlerpToGravitySourceSpeed;
+        public float SlerpRotateViewSpeed;
         public float PlayerSpeed;
         public float JumpForce;
     }

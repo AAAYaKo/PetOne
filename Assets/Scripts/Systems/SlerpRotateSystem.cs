@@ -12,11 +12,11 @@ namespace Client
         // auto-injected fields.
         private readonly EcsFilter<TargetRotation, RealTransform> _filter = null;
 
-        private readonly float _slerpSpeed = 0;
+        private readonly InjectData _injectData = null;
 
         void IEcsRunSystem.Run()
         {
-            float time = Time.deltaTime * _slerpSpeed;
+            float time = Time.deltaTime * _injectData.SlerpRotateViewSpeed;
             DoJob(time);
         }
 

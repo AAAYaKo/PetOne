@@ -9,7 +9,8 @@ namespace Client
         private InjectData _injectData = new InjectData
         {
             PlayerSpeed = 7,
-            JumpForce = 5
+            JumpForce = 5,
+            SlerpRotateViewSpeed = 7
         };
         private EcsWorld _world;
         private EcsSystems _systems;
@@ -37,6 +38,7 @@ namespace Client
                 // register your systems
                 .Add(new PlayerInitSystem())
                 .Add (new InputInitSystem())
+                .Add(new SlerpRotateSystem())
 
                 // register one-frame components
                 // .OneFrame<TestComponent1> ()
