@@ -20,33 +20,25 @@ namespace Client
                 ref NGravityAttractor attractor = ref _filter.Get2(i);
                 EcsEntity entity = _filter.GetEntity(i);
 
-                if (body.Value.IsSleeping())
+                if (entity.Has<PhysicTranslation>())
                 {
+                    attractor.Time = 0;
                     entity.Del<WannaSleep>();
+                    continue;
                 }
+
+                bool wannaSleep = body.Value.velocity.sqrMagnitude <= SLEEP_THRESHOLD;
+
+                if (wannaSleep && (attractor.Time >= SLEEP_DELLAY))
+                    entity.Get<WannaSleep>();
+
+                else if (wannaSleep)
+                    attractor.Time += delta;
+
                 else
                 {
-                    bool wannaSleep = body.Value.velocity.sqrMagnitude <= SLEEP_THRESHOLD;
-                    if (wannaSleep)
-                    {
-                        if (entity.Has<PhysicTranslation>())
-                        {
-                            attractor.Time = 0;
-                            entity.Del<WannaSleep>();
-                        }
-                        else
-                        {
-                            if (attractor.Time >= SLEEP_DELLAY)
-                                entity.Get<WannaSleep>();
-                            else
-                                attractor.Time += delta;
-                        }
-                    }
-                    else
-                    {
-                        attractor.Time = 0;
-                        entity.Del<WannaSleep>();
-                    }
+                    attractor.Time = 0;
+                    entity.Del<WannaSleep>();
                 }
             }
         }

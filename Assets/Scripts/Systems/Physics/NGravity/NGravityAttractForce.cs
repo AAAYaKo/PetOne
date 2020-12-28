@@ -6,6 +6,8 @@ namespace Client
 {
     sealed class NGravityAttractForce : IEcsRunSystem
     {
+        private const float SLERP_SPEED = 10;
+
         // auto-injected fields.
         private readonly EcsFilter<NGravityAttractor, PhysicBody, RealTransform>.Exclude<NGravityRotateToTag>.Exclude<WannaSleep> _filter = null;
 
@@ -22,7 +24,7 @@ namespace Client
                     quaternion angle = Calculate.FromToRotation(transform.up, attractor.NormalToGround);
 
                     body.AddForce(-attractor.NormalToGround * attractor.GravityFactor, ForceMode.Acceleration);
-                    quaternion slerp = math.slerp(transform.rotation, angle * transform.rotation, 10 * Time.fixedDeltaTime);
+                    quaternion slerp = math.slerp(transform.rotation, angle * transform.rotation, SLERP_SPEED * Time.fixedDeltaTime);
                     body.MoveRotation(slerp);
                 }
             }
