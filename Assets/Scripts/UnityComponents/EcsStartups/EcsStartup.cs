@@ -55,7 +55,7 @@ namespace Client
             _fixedUpdate
                 // register systems
                 .Add(new NGravitySourcesInit())
-                .Add(new NGravityRotate())
+                .Add(new NGravityRotateToNewSource())
                 .Add(new ChangeNGravitySource())
                 .Add(new NGravityAffectSystem())
                 .Add(new NGravityAttractForce())

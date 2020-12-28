@@ -15,9 +15,9 @@ namespace Client
         void IEcsRunSystem.Run()
         {
             int count = _filter.GetEntitiesCount();
-            if(count != 0)
+            if (count != 0)
             {
-               //Job
+                //Job
                 var hits = new NativeArray<RaycastHit>(count, Allocator.Persistent);
                 var commands = new NativeArray<SpherecastCommand>(count, Allocator.Persistent);
 
@@ -25,8 +25,8 @@ namespace Client
                 foreach (var i in _filter)
                 {
                     Transform transform = _filter.Get1(i).Value;
-                    float3 position = transform.position;
-                    float3 direction = -_filter.Get2(i).NormalToGround;
+                    float3 position = transform.position + transform.up;
+                    float3 direction = -transform.up;
                     commands[i] = new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
                 }
                 SpherecastCommand.ScheduleBatch(commands, hits, 1).Complete();

@@ -11,7 +11,7 @@ namespace Client
     sealed class ChangeNGravitySource : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<ChangeSourceTag, RealTransform> _filter;
+        private readonly EcsFilter<ChangeSourceTag, RealTransform> _filter = null;
         private readonly LayerMask _gravityLayer = default;
         private readonly InjectData _injectData = null;
 

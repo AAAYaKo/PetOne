@@ -308,7 +308,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 382596567}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 15.79, y: -1.2, z: 19.39}
+  m_LocalPosition: {x: 15.79, y: -1.2, z: -6.1}
   m_LocalScale: {x: 10, y: 10, z: 10}
   m_Children: []
   m_Father: {fileID: 0}
@@ -327,11 +327,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19208
+  Id: 19570
   Position:
     x: 15.79
     y: -1.2
-    z: 19.39
+    z: -6.1
   Layer: 7
 --- !u!1 &806121080
 GameObject:
@@ -366,7 +366,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19222
+  Id: 19584
   Position:
     x: -27.4
     y: 14.4
@@ -607,11 +607,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 33c60792803f8c443a8cd69a6554f159, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _attractorsCount: 32
+  _attractorsCount: 128
   _injectData:
-    RadiusOfGroundScan: 0.5
-    NewGravitySourceScanRadiuce: 1000
-    SlerpGravitySpeed: 2.5
+    RadiusOfGroundScan: 0.2
+    NewGravitySourceScanRadiuce: 100
+    SlerpToGravitySourceSpeed: 10
+    DefaulFactor: 9.81
+    SlerpRotateViewSpeed: 0
+    PlayerSpeed: 0
+    JumpForce: 0
   _attractor: {fileID: 4556993043173737792, guid: 1765488c1cc0e244bb2fd6c3bcd9f2c3, type: 3}
   _gravityLayer:
     serializedVersion: 2
@@ -649,7 +653,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19250
+  Id: 19612
   Position:
     x: 9.97
     y: 18.1

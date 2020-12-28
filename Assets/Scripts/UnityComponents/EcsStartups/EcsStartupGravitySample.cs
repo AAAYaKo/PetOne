@@ -40,7 +40,7 @@ namespace Client
                 .Add(new ChangeNGravitySource())
                 .Add(new NGravityAffectSystem())
                 .Add(new NGravityAttractForce())
-                .Add(new NGravityRotate())
+                .Add(new NGravityRotateToNewSource())
 
                 // register one-frame components
                 .OneFrame<ChangeSourceTag>()

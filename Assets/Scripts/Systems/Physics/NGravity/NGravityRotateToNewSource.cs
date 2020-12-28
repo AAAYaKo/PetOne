@@ -7,11 +7,14 @@ using UnityEngine.Jobs;
 
 namespace Client
 {
-    sealed class NGravityRotate : IEcsRunSystem
+    sealed class NGravityRotateToNewSource : IEcsRunSystem
     {
+        private const float APPROXIMATION = 0.99f;
+
         // auto-injected fields.
         private readonly EcsFilter<NGravityAttractor, RealTransform, NGravityRotateToTag> _filter = null;
         private readonly InjectData _injectData = null;
+
 
         void IEcsRunSystem.Run()
         {
@@ -28,7 +31,7 @@ namespace Client
                     transforms[i] = _filter.Get2(i).Value;
                     up[i] = transforms[i].up;
                     upTarget[i] = attractor.NormalToGround;
-                    if (math.abs(math.dot(up[i], upTarget[i])) > 0.99f)
+                    if (math.dot(up[i], upTarget[i]) > APPROXIMATION)
                         _filter.GetEntity(i).Del<NGravityRotateToTag>();
                 }
                 TransformAccessArray accessArray = new TransformAccessArray(transforms);
@@ -58,8 +61,8 @@ namespace Client
 
             public void Execute(int index, TransformAccess transform)
             {
-                quaternion angle = Calculate.FromToRotation(Up[index], UpTarget[index]);
-                transform.rotation = math.slerp(transform.rotation, angle * transform.rotation, Time);
+                    quaternion angle = Calculate.FromToRotation(Up[index], UpTarget[index]);
+                    transform.rotation = math.slerp(transform.rotation, angle * transform.rotation, Time);
             }
         }
     }
