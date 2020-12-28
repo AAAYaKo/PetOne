@@ -6,5 +6,6 @@ namespace Client
     {
         public float GravityFactor;
         public float3 NormalToGround;
+        public float Time;
     }
 }

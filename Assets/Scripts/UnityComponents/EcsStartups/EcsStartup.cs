@@ -54,12 +54,13 @@ namespace Client
 
             _fixedUpdate
                 // register systems
+                .Add(new NGravitySleep())
                 .Add(new NGravitySourcesInit())
-                .Add(new NGravityRotateToNewSource())
+                .Add(new NGravityAttractForce())
                 .Add(new ChangeNGravitySource())
                 .Add(new NGravityAffectSystem())
-                .Add(new NGravityAttractForce())
                 .Add(new PhysicTranslationSystem())
+                .Add(new NGravityRotateToNewSource())
 
                 // register one-frame components
                 .OneFrame<ChangeSourceTag>()
