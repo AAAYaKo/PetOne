@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace Client
 {
-    sealed class InputInitSystem : IEcsInitSystem
+    sealed class InputSystem : IEcsInitSystem, IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<InputTag, RealTransform, ViewComponent> _filter = null;
@@ -15,65 +15,24 @@ namespace Client
         private readonly PlayerTag _player = null;
         private readonly InjectData _injectData = null;
 
+        [EcsIgnoreInject] private float2 _direction = float2.zero;
+        [EcsIgnoreInject] private bool _needMove = false;
+
 
         public void Init()
         {
-            float delta = Time.fixedDeltaTime;
-            float speed = _injectData.PlayerSpeed;
             float jumpForce = _injectData.JumpForce;
 
             _inputs.Player.Move.performed += x =>
             {
-                int count = _filter.GetEntitiesCount();
-                if (count != 0)
-                {
-                    //Prepare Data For Job
-                    //Inputs
-                    Vector2 input = x.ReadValue<Vector2>();
-                    var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
-                    foreach (var i in _filter)
-                    {
-                        Transform transform = _filter.Get2(i).Value;
-                        CombinedInput combinedInput = new CombinedInput
-                        {
-                            Up = transform.up,
-                            Rotation = _filter.Get3(i).Entity.Get<RealTransform>().Value.rotation
-                        };
-                        combinedInputs[i] = combinedInput;
-                    }
-                    //OutPuts
-                    var results = new NativeArray<RigidTransform>(count, Allocator.Persistent);
-
-                    //Do Job
-                    var job = new CalculateJob
-                    {
-                        Direction = input,
-                        CombinedInput = combinedInputs,
-                        CameraRight = _player.CameraTransform.right,
-                        CameraForward = _player.CameraTransform.forward,
-                        Result = results
-                    };
-                    job
-                    .Schedule(count, 1)
-                    .Complete();
-
-                    //Affect
-                    foreach (var i in _filter)
-                    {
-                        ref PhysicTranslation physicTranslation = ref _filter.GetEntity(i).Get<PhysicTranslation>();
-                        ref EcsEntity entity = ref _filter.Get3(i).Entity;
-                        ref TargetRotation targetRotaion = ref entity.Get<TargetRotation>();
-
-                        physicTranslation.Value = delta * speed * results[i].pos;
-                        targetRotaion.Value = results[i].rot;
-                    }
-
-                    results.Dispose();
-                    combinedInputs.Dispose();
-                }
+                _direction = x.ReadValue<Vector2>();
+                _needMove = true;
             };
             _inputs.Player.Move.canceled += _ =>
             {
+                _direction = float2.zero;
+                _needMove = false;
+
                 foreach (var i in _filter)
                 {
                     ref EcsEntity entity = ref _filter.GetEntity(i);
@@ -97,10 +56,75 @@ namespace Client
             };
         }
 
-        private float3 GetForceVectorWithoutMovement(float3 up, float force)
+
+        public void Run()
         {
-            return up * force;
+            if (_needMove)
+            {
+                int count = _filter.GetEntitiesCount();
+                if (count != 0)
+                {
+                    //Prepare Data For Job
+                    //Inputs
+                    float delta = Time.fixedDeltaTime;
+                    float speed = _injectData.PlayerSpeed;
+                    var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
+                    FillJobInputArray(combinedInputs);
+                    //OutPuts
+                    var results = new NativeArray<RigidTransform>(count, Allocator.Persistent);
+
+                    DoJob(count, combinedInputs, results);
+                    Affect(delta, speed, results);
+
+                    results.Dispose();
+                    combinedInputs.Dispose();
+                }
+            }
         }
+
+        private void Affect(float delta, float speed, NativeArray<RigidTransform> results)
+        {
+            foreach (var i in _filter)
+            {
+                ref PhysicTranslation physicTranslation = ref _filter.GetEntity(i).Get<PhysicTranslation>();
+                ref EcsEntity entity = ref _filter.Get3(i).Entity;
+                ref TargetRotation targetRotaion = ref entity.Get<TargetRotation>();
+
+                physicTranslation.Value = delta * speed * results[i].pos;
+                targetRotaion.Value = results[i].rot;
+            }
+        }
+
+        private void DoJob(int count, NativeArray<CombinedInput> combinedInputs, NativeArray<RigidTransform> results)
+        {
+            var job = new CalculateJob
+            {
+                Direction = _direction,
+                CombinedInput = combinedInputs,
+                CameraRight = _player.CameraTransform.right,
+                CameraForward = _player.CameraTransform.forward,
+                Result = results
+            };
+            job
+            .Schedule(count, 1)
+            .Complete();
+        }
+
+        private void FillJobInputArray(NativeArray<CombinedInput> combinedInputs)
+        {
+            foreach (var i in _filter)
+            {
+                Transform transform = _filter.Get2(i).Value;
+                CombinedInput combinedInput = new CombinedInput
+                {
+                    Up = transform.up,
+                    Rotation = _filter.Get3(i).Entity.Get<RealTransform>().Value.rotation
+                };
+                combinedInputs[i] = combinedInput;
+            }
+        }
+
+        private float3 GetForceVectorWithoutMovement(float3 up, float force) => up * force;
 
         private float3 GetForceVectorWithMovement(EcsEntity entity, float3 up, float force)
         {

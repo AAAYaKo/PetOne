@@ -37,7 +37,7 @@ namespace Client
             _systems
                 // register your systems
                 .Add(new PlayerInitSystem())
-                .Add(new InputInitSystem())
+                .Add(new InputSystem())
                 .Add(new SlerpRotateSystem())
 
                 // inject service instances

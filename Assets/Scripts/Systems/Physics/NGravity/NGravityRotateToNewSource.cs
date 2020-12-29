@@ -42,13 +42,13 @@ namespace Client
                     UpTarget = upTarget,
                     Time = _injectData.SlerpToGravitySourceSpeed * delta
                 };
-
-
-                job.Schedule(accessArray).Complete();
+                job
+                    .Schedule(accessArray)
+                    .Complete();
 
                 accessArray.Dispose();
-                up.Dispose();
                 upTarget.Dispose();
+                up.Dispose();
             }
         }
 

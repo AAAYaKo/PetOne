@@ -38,7 +38,7 @@ namespace Client
                 // register systems
                 //Init
                 .Add(new PlayerInitSystem())
-                .Add(new InputInitSystem())
+                .Add(new InputSystem())
                 //Run
                 .Add(new SlerpRotateSystem())
                 .Add(new ImpulseAttractSystem())
