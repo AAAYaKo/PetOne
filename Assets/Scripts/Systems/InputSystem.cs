@@ -52,6 +52,17 @@ namespace Client
 
                     float3 forceVector = isTranslating ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
                     force.Value = forceVector;
+
+                    entity.Get<FactorOverridedTag>();
+                }
+            };
+
+            _inputs.Player.Jump.canceled += _ =>
+            {
+                foreach (var i in _filter)
+                {
+                    ref EcsEntity entity = ref _filter.GetEntity(i);
+                    entity.Get<FactorReset>();
                 }
             };
         }

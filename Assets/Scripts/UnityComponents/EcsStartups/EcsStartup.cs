@@ -55,15 +55,20 @@ namespace Client
             _fixedUpdate
                 // register systems
                 .Add(new NGravitySleep())
+                .Add(new MarkFactorReset())
+                .Add(new ResetNGravityFactor())
                 .Add(new NGravitySourcesInit())
-                .Add(new NGravityAttractForce())
-                .Add(new ChangeNGravitySource())
                 .Add(new NGravityAffectSystem())
+                .Add(new ChangeNGravitySource())
+                .Add(new NGravityAttractForce())
                 .Add(new PhysicTranslationSystem())
+                .Add(new NGravityFactorOverriding())
                 .Add(new NGravityRotateToNewSource())
 
                 // register one-frame components
                 .OneFrame<ChangeSourceTag>()
+                .OneFrame<FactorOverridedTag>()
+                .OneFrame<FactorReset>()
 
                 // inject service instances
                 .Inject(_gravityLayer)

@@ -6,6 +6,7 @@ public class PlayerTag : MonoBehaviour
     public Transform PlayerTransform;
     public Rigidbody PlayerRigidbody;
     public Transform ViewTransform;
+    public Animator ViewAnimator;
     public Transform CameraTransform;
 
 #if UNITY_EDITOR
@@ -13,7 +14,8 @@ public class PlayerTag : MonoBehaviour
     {
         PlayerTransform = GetComponent<Transform>();
         PlayerRigidbody = GetComponent<Rigidbody>();
-        ViewTransform = PlayerTransform.GetChild(0);
+        ViewAnimator = GetComponentInChildren<Animator>();
+        ViewTransform = ViewAnimator.GetComponent<Transform>();
         CameraTransform = Camera.main.GetComponent<Transform>();
     }
 #endif
