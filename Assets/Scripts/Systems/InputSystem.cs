@@ -10,6 +10,7 @@ namespace Client
     sealed class InputSystem : IEcsInitSystem, IEcsRunSystem
     {
         private const float SLOW_SPEED_PERCENT = 0.75f;
+        private const string PROPERTY_NAME = "Jump Rising";
 
         // auto-injected fields.
         private readonly EcsFilter<InputTag, RealTransform, ViewComponent> _filter = null;
@@ -59,12 +60,17 @@ namespace Client
             {
                 foreach (var i in _filter)
                 {
+                    ViewComponent view = _filter.Get3(i);
+                    view.Animator.SetBool(PROPERTY_NAME, true);
+
                     ref EcsEntity entity = ref _filter.GetEntity(i);
+                    ref InAir inAir = ref entity.Get<InAir>();
+                    inAir.Time = 0;
+
                     ref ForceImpulse force = ref entity.Get<ForceImpulse>();
                     float3 up = _filter.Get2(i).Value.up;
-                    bool isTranslating = entity.Has<PhysicTranslation>();
 
-                    float3 forceVector = isTranslating ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
+                    float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
                     force.Value = forceVector;
 
                     entity.Get<FactorOverridedTag>();

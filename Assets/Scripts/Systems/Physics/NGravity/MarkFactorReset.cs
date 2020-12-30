@@ -5,7 +5,6 @@ namespace Client
 {
     sealed class MarkFactorReset : IEcsRunSystem
     {
-
         // auto-injected fields.
         private readonly EcsFilter<FactorOverrided, PhysicBody, RealTransform> _filter = null;
 
@@ -17,7 +16,10 @@ namespace Client
                 float3 up = _filter.Get3(i).Value.up;
                 bool isntRising = !(math.dot(body.Value.velocity, up) > 0);
                 if (isntRising)
-                    _filter.GetEntity(i).Get<FactorReset>();
+                {
+                    EcsEntity entity = _filter.GetEntity(i);
+                    entity.Get<FactorReset>();
+                }
             }
         }
     }

@@ -25,7 +25,7 @@ namespace Client
                 foreach (var i in _filter)
                 {
                     Transform transform = _filter.Get1(i).Value;
-                    float3 position = transform.position + transform.up;
+                    float3 position = transform.position;
                     float3 direction = -transform.up;
                     commands[i] = new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
                 }
@@ -36,6 +36,7 @@ namespace Client
                 {
                     ref NGravityAttractor attractor = ref _filter.Get2(i);
                     attractor.NormalToGround = hits[i].normal;
+                    attractor.DistanceToGround = hits[i].distance;
                 }
 
                 //Dispose NativeArrays

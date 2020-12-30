@@ -40,11 +40,13 @@ namespace Client
                 .Add(new PlayerInitSystem())
                 .Add(new InputSystem())
                 //Run
-                .Add(new AnimatorSystem())
                 .Add(new SlerpRotateSystem())
                 .Add(new ImpulseAttractSystem())
+                .Add(new AnimatorJumpingSystem())
+                .Add(new AnimatorWalkingSystem())
 
                 // register one-frame components
+                .OneFrame<LandedTag>()
                 .OneFrame<ForceImpulse>()
 
                 // inject
@@ -62,14 +64,15 @@ namespace Client
                 .Add(new NGravityAffectSystem())
                 .Add(new ChangeNGravitySource())
                 .Add(new NGravityAttractForce())
+                .Add(new LandingReactionSystem())
                 .Add(new PhysicTranslationSystem())
                 .Add(new NGravityFactorOverriding())
                 .Add(new NGravityRotateToNewSource())
 
                 // register one-frame components
+                .OneFrame<FactorReset>()
                 .OneFrame<ChangeSourceTag>()
                 .OneFrame<FactorOverridedTag>()
-                .OneFrame<FactorReset>()
 
                 // inject service instances
                 .Inject(_gravityLayer)

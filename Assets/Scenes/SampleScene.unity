@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19488
+  Id: 19756
   Position:
     x: 0
     y: 0
@@ -296,7 +296,9 @@ MonoBehaviour:
     JumpFactor: 1.9620001
     SlerpRotateViewSpeed: 7
     SlowRunSpeed: 7
-    LerpAnimatorSpeed: 5
+    FastRunSpeed: 0
+    ToFootDistance: 0.92
+    LerpAnimatorSpeed: 4.5
     JumpForce: 5
   _gravityLayer:
     serializedVersion: 2
@@ -1079,7 +1081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19536
+  Id: 19896
   Position:
     x: 45
     y: 29.5
@@ -1258,7 +1260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19548
+  Id: 19928
   Position:
     x: 0
     y: 0
@@ -1332,23 +1334,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 201385353880821589, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.000000003723051
+      value: -0.000000003723051
       objectReference: {fileID: 0}
     - target: {fileID: 201385353880821589, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -1.2916417e-10
+      value: 1.2916417e-10
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0016537538
+      value: -0.0016537507
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.y
-      value: -0.000000001449067
+      value: 1.16415176e-10
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -2.3964032e-12
+      value: 1.9252194e-13
       objectReference: {fileID: 0}
     - target: {fileID: 4612229712826623304, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_Icon

@@ -12,6 +12,8 @@ namespace Client
         public float JumpFactor = 9.81f / 5;
         public float SlerpRotateViewSpeed;
         public float SlowRunSpeed;
+        public float FastRunSpeed;
+        public float ToFootDistance;
         public float LerpAnimatorSpeed;
         public float JumpForce;
     }
