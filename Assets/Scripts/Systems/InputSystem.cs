@@ -9,6 +9,8 @@ namespace Client
 {
     sealed class InputSystem : IEcsInitSystem, IEcsRunSystem
     {
+        private const float SLOW_SPEED_PERCENT = 0.75f;
+
         // auto-injected fields.
         private readonly EcsFilter<InputTag, RealTransform, ViewComponent> _filter = null;
         private readonly Inputs _inputs = null;
@@ -27,6 +29,14 @@ namespace Client
             {
                 _direction = x.ReadValue<Vector2>();
                 _needMove = true;
+
+                foreach (var i in _filter)
+                {
+                    ref ViewComponent view = ref _filter.Get3(i);
+
+                    ref TargetSpeedPercent targetSpeed = ref _filter.GetEntity(i).Get<TargetSpeedPercent>();
+                    targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
+                }
             };
             _inputs.Player.Move.canceled += _ =>
             {
@@ -37,6 +47,10 @@ namespace Client
                 {
                     ref EcsEntity entity = ref _filter.GetEntity(i);
                     ref ViewComponent view = ref _filter.Get3(i);
+
+                    ref TargetSpeedPercent targetSpeed = ref entity.Get<TargetSpeedPercent>();
+                    targetSpeed.Value = 0;
+
                     view.Entity.Del<TargetRotation>();
                     entity.Del<PhysicTranslation>();
                 }
@@ -78,7 +92,7 @@ namespace Client
                     //Prepare Data For Job
                     //Inputs
                     float delta = Time.fixedDeltaTime;
-                    float speed = _injectData.PlayerSpeed;
+                    float speed = _injectData.SlowRunSpeed;
                     var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
                     FillJobInputArray(combinedInputs);
                     //OutPuts
@@ -98,8 +112,8 @@ namespace Client
             foreach (var i in _filter)
             {
                 ref PhysicTranslation physicTranslation = ref _filter.GetEntity(i).Get<PhysicTranslation>();
-                ref EcsEntity entity = ref _filter.Get3(i).Entity;
-                ref TargetRotation targetRotaion = ref entity.Get<TargetRotation>();
+                ref EcsEntity view = ref _filter.Get3(i).Entity;
+                ref TargetRotation targetRotaion = ref view.Get<TargetRotation>();
 
                 physicTranslation.Value = delta * speed * results[i].pos;
                 targetRotaion.Value = results[i].rot;

@@ -8,7 +8,7 @@ namespace Client
         [SerializeField]
         private InjectData _injectData = new InjectData
         {
-            PlayerSpeed = 7,
+            SlowRunSpeed = 7,
             JumpForce = 5,
             SlerpRotateViewSpeed = 7
         };

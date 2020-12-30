@@ -37,6 +37,7 @@ namespace Client
 
             ref ViewComponent viewComponent = ref player.Get<ViewComponent>();
             viewComponent.Entity = viewEntity;
+            viewComponent.Animator = _player.ViewAnimator;
         }
 
         private void PhysicBodyInit(EcsEntity player, Rigidbody playerRigidbody)

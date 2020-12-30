@@ -40,6 +40,7 @@ namespace Client
                 .Add(new PlayerInitSystem())
                 .Add(new InputSystem())
                 //Run
+                .Add(new AnimatorSystem())
                 .Add(new SlerpRotateSystem())
                 .Add(new ImpulseAttractSystem())
 
