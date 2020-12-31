@@ -33,10 +33,13 @@ namespace Client
 
                 foreach (var i in _filter)
                 {
-                    ref ViewComponent view = ref _filter.Get3(i);
+                    if (!_filter.GetEntity(i).Has<JumpData>())
+                    {
+                        ref ViewComponent view = ref _filter.Get3(i);
 
-                    ref TargetSpeedPercent targetSpeed = ref _filter.GetEntity(i).Get<TargetSpeedPercent>();
-                    targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
+                        ref TargetSpeedPercent targetSpeed = ref _filter.GetEntity(i).Get<TargetSpeedPercent>();
+                        targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
+                    }
                 }
             };
             _inputs.Player.Move.canceled += _ =>
