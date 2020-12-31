@@ -60,20 +60,23 @@ namespace Client
             {
                 foreach (var i in _filter)
                 {
-                    ViewComponent view = _filter.Get3(i);
-                    view.Animator.SetBool(PROPERTY_NAME, true);
+                    EcsEntity entity = _filter.GetEntity(i);
+                    if (!entity.Has<JumpData>())
+                    {
+                        ViewComponent view = _filter.Get3(i);
+                        view.Animator.SetBool(PROPERTY_NAME, true);
 
-                    ref EcsEntity entity = ref _filter.GetEntity(i);
-                    ref InAir inAir = ref entity.Get<InAir>();
-                    inAir.Time = 0;
+                        ref JumpData inAir = ref entity.Get<JumpData>();
+                        inAir.IsInAir = false;
 
-                    ref ForceImpulse force = ref entity.Get<ForceImpulse>();
-                    float3 up = _filter.Get2(i).Value.up;
+                        ref ForceImpulse force = ref entity.Get<ForceImpulse>();
+                        float3 up = _filter.Get2(i).Value.up;
 
-                    float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
-                    force.Value = forceVector;
+                        float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
+                        force.Value = forceVector;
 
-                    entity.Get<FactorOverridedTag>();
+                        entity.Get<FactorOverridedTag>();
+                    }
                 }
             };
 

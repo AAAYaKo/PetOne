@@ -5,10 +5,8 @@ namespace Client
 {
     sealed class LandingReactionSystem : IEcsRunSystem
     {
-        private const float TIME_STOP = 0.03f;
-
         // auto-injected fields.
-        private readonly EcsFilter<NGravityAttractor, InAir> _filter = null;
+        private readonly EcsFilter<NGravityAttractor, JumpData> _filter = null;
         private readonly InjectData _injectData = null;
 
         void IEcsRunSystem.Run()
@@ -16,20 +14,19 @@ namespace Client
             float toFoot = _injectData.ToFootDistance;
             foreach (var i in _filter)
             {
-                ref InAir inAir = ref _filter.Get2(i);
-                bool timeOut = inAir.Time >= TIME_STOP;
-                if (timeOut)
+                ref JumpData jump = ref _filter.Get2(i);
+                float toGround = _filter.Get1(i).DistanceToGround;
+                if (!(toGround > toFoot))
                 {
-                    float toGround = _filter.Get1(i).DistanceToGround;
-                    if (!(toGround > toFoot))
+                    if (jump.IsInAir)
                     {
                         EcsEntity entity = _filter.GetEntity(i);
-                        entity.Del<InAir>();
+                        entity.Del<JumpData>();
                         entity.Get<LandedTag>();
                     }
+                    else
+                        jump.IsInAir = true;
                 }
-                else
-                    inAir.Time += Time.fixedDeltaTime;
             }
         }
     }

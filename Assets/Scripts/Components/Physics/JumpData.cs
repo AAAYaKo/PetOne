@@ -2,8 +2,8 @@ using Leopotam.Ecs;
 
 namespace Client
 {
-    struct InAir
+    struct JumpData
     {
-        public float Time;
+        public bool IsInAir;
     }
 }

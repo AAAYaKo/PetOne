@@ -253,7 +253,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19756
+  Id: 19764
   Position:
     x: 0
     y: 0
@@ -297,7 +297,7 @@ MonoBehaviour:
     SlerpRotateViewSpeed: 7
     SlowRunSpeed: 7
     FastRunSpeed: 0
-    ToFootDistance: 0.92
+    ToFootDistance: 0.681
     LerpAnimatorSpeed: 4.5
     JumpForce: 5
   _gravityLayer:
@@ -1081,7 +1081,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19896
+  Id: 19904
   Position:
     x: 45
     y: 29.5
@@ -1120,7 +1120,7 @@ Animator:
   m_Controller: {fileID: 9100000, guid: 76805a1f43890df4bafb1bafe09c50f0, type: 2}
   m_CullingMode: 0
   m_UpdateMode: 0
-  m_ApplyRootMotion: 0
+  m_ApplyRootMotion: 1
   m_LinearVelocityBlending: 0
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
@@ -1260,7 +1260,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 19928
+  Id: 19936
   Position:
     x: 0
     y: 0
@@ -1342,15 +1342,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.x
-      value: -0.0016537507
+      value: -0.0016537528
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 1.16415176e-10
+      value: 3.144513e-10
       objectReference: {fileID: 0}
     - target: {fileID: 201385355534857020, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_LocalRotation.z
-      value: 1.9252194e-13
+      value: 5.2002543e-13
       objectReference: {fileID: 0}
     - target: {fileID: 4612229712826623304, guid: 8ae621b2b01b47d4f952223b7658a168, type: 3}
       propertyPath: m_Icon
