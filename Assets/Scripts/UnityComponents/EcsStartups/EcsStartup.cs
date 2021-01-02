@@ -14,6 +14,7 @@ namespace Client
 
         private PlayerTag _player;
         private Inputs _inputs;
+        private AnimationEventsProvider _provider;
         private NGravitySourceTag[] _sources;
 
 
@@ -21,6 +22,7 @@ namespace Client
         {
             _inputs = new Inputs();
             _player = FindObjectOfType<PlayerTag>();
+            _provider = FindObjectOfType<AnimationEventsProvider>();
             _sources = FindObjectsOfType<NGravitySourceTag>();
         }
 
@@ -52,6 +54,7 @@ namespace Client
                 // inject
                 .Inject(_gravityLayer)
                 .Inject(_injectData)
+                .Inject(_provider)
                 .Inject(_player)
                 .Inject(_inputs);
 

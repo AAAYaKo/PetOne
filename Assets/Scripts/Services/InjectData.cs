@@ -1,9 +1,10 @@
 ﻿using System;
+using UnityEngine;
 
 namespace Client
 {
-    [Serializable]
-    public class InjectData
+    [CreateAssetMenu(fileName = "Config", menuName = "ScriptableObjects/Config")]
+    public class InjectData : ScriptableObject
     {
         public float RadiusOfGroundScan;
         public float NewGravitySourceScanRadiuce;

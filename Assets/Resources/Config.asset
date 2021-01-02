@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 42f76ee208119a744be656cce8d5ec21, type: 3}
+  m_Name: Config
+  m_EditorClassIdentifier: 
+  RadiusOfGroundScan: 0.2
+  NewGravitySourceScanRadiuce: 10
+  SlerpToGravitySourceSpeed: 5
+  DefaulFactor: 9.81
+  JumpFactor: 1.9620001
+  SlerpRotateViewSpeed: 7
+  SlowRunSpeed: 5
+  FastRunSpeed: 7
+  ToFootDistance: 0.682
+  LerpAnimatorSpeed: 10
+  JumpForce: 5

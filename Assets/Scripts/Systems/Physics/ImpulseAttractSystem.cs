@@ -14,7 +14,7 @@ namespace Client
             foreach (var i in _filter)
             {
                 Rigidbody body = _filter.Get2(i).Value;
-                float3 force = _filter.Get1(i).Value;
+                float3 force = _filter.Get1(i).Value * body.mass;
                 body.AddForce(force, ForceMode.Impulse);
             }
         }

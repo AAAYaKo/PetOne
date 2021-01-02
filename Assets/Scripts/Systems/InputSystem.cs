@@ -9,15 +9,23 @@ namespace Client
 {
     sealed class InputSystem : IEcsInitSystem, IEcsRunSystem
     {
+        //Const
         private const float SLOW_SPEED_PERCENT = 0.75f;
-        private const string PROPERTY_NAME = "Jump Rising";
+        private const string JUMP_PROPERTY_NAME = "Jump Rising";
+        private const string ATTACK_PROPERTY_NAME = "Attack";
 
         // auto-injected fields.
-        private readonly EcsFilter<InputTag, RealTransform, ViewComponent> _filter = null;
+        //Ecs-data
+        private readonly EcsFilter<InputTag, RealTransform, ViewComponent>.Exclude<JumpData, AttackTag> _filter1 = null;
+        private readonly EcsFilter<InputTag, RealTransform, ViewComponent>.Exclude<AttackTag> _filter2 = null;
+        private readonly EcsFilter<AttackTag> _filter3 = null;
+        //Config-data
         private readonly Inputs _inputs = null;
         private readonly PlayerTag _player = null;
+        private readonly AnimationEventsProvider _provider = null;
         private readonly InjectData _injectData = null;
 
+        //EcsIgnore
         [EcsIgnoreInject] private float2 _direction = float2.zero;
         [EcsIgnoreInject] private bool _needMove = false;
 
@@ -30,27 +38,24 @@ namespace Client
             {
                 _direction = x.ReadValue<Vector2>();
                 _needMove = true;
-
-                foreach (var i in _filter)
+                foreach (var i in _filter2)
                 {
-                    if (!_filter.GetEntity(i).Has<JumpData>())
-                    {
-                        ref ViewComponent view = ref _filter.Get3(i);
+                    ref ViewComponent view = ref _filter2.Get3(i);
 
-                        ref TargetSpeedPercent targetSpeed = ref _filter.GetEntity(i).Get<TargetSpeedPercent>();
-                        targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
-                    }
+                    ref TargetSpeedPercent targetSpeed = ref _filter2.GetEntity(i).Get<TargetSpeedPercent>();
+                    targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
                 }
+
             };
             _inputs.Player.Move.canceled += _ =>
             {
                 _direction = float2.zero;
                 _needMove = false;
 
-                foreach (var i in _filter)
+                foreach (var i in _filter2)
                 {
-                    ref EcsEntity entity = ref _filter.GetEntity(i);
-                    ref ViewComponent view = ref _filter.Get3(i);
+                    ref EcsEntity entity = ref _filter2.GetEntity(i);
+                    ref ViewComponent view = ref _filter2.Get3(i);
 
                     ref TargetSpeedPercent targetSpeed = ref entity.Get<TargetSpeedPercent>();
                     targetSpeed.Value = 0;
@@ -61,34 +66,53 @@ namespace Client
             };
             _inputs.Player.Jump.performed += _ =>
             {
-                foreach (var i in _filter)
+                foreach (var i in _filter2)
                 {
-                    EcsEntity entity = _filter.GetEntity(i);
-                    if (!entity.Has<JumpData>())
-                    {
-                        ViewComponent view = _filter.Get3(i);
-                        view.Animator.SetBool(PROPERTY_NAME, true);
+                    EcsEntity entity = _filter2.GetEntity(i);
 
-                        ref JumpData inAir = ref entity.Get<JumpData>();
-                        inAir.IsInAir = false;
+                    ViewComponent view = _filter2.Get3(i);
+                    view.Animator.SetBool(JUMP_PROPERTY_NAME, true);
 
-                        ref ForceImpulse force = ref entity.Get<ForceImpulse>();
-                        float3 up = _filter.Get2(i).Value.up;
+                    ref JumpData inAir = ref entity.Get<JumpData>();
+                    inAir.IsInAir = false;
 
-                        float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
-                        force.Value = forceVector;
+                    ref ForceImpulse force = ref entity.Get<ForceImpulse>();
+                    float3 up = _filter2.Get2(i).Value.up;
 
-                        entity.Get<FactorOverridedTag>();
-                    }
+                    float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
+                    force.Value = forceVector;
+
+                    entity.Del<PhysicTranslation>();
+                    entity.Get<FactorOverridedTag>();
+                }
+            };
+            _inputs.Player.Jump.canceled += _ =>
+            {
+                foreach (var i in _filter2)
+                {
+                    ref EcsEntity entity = ref _filter2.GetEntity(i);
+                    if (entity.Has<FactorOverrided>())
+                        entity.Get<FactorReset>();
+                }
+            };
+            _inputs.Player.Attack.performed += _ =>
+            {
+                foreach (var i in _filter1)
+                {
+                    EcsEntity entity = _filter1.GetEntity(i);
+                    ViewComponent view = _filter1.Get3(i);
+                    entity.Del<PhysicTranslation>();
+                    entity.Get<AttackTag>();
+                    view.Animator.SetTrigger(ATTACK_PROPERTY_NAME);
                 }
             };
 
-            _inputs.Player.Jump.canceled += _ =>
+            _provider.AttackEnded += () =>
             {
-                foreach (var i in _filter)
+                foreach (var i in _filter3)
                 {
-                    ref EcsEntity entity = ref _filter.GetEntity(i);
-                    entity.Get<FactorReset>();
+                    EcsEntity entity = _filter3.GetEntity(i);
+                    entity.Del<AttackTag>();
                 }
             };
         }
@@ -98,7 +122,7 @@ namespace Client
         {
             if (_needMove)
             {
-                int count = _filter.GetEntitiesCount();
+                int count = _filter1.GetEntitiesCount();
                 if (count != 0)
                 {
                     //Prepare Data For Job
@@ -106,9 +130,9 @@ namespace Client
                     float delta = Time.fixedDeltaTime;
                     float speed = _injectData.SlowRunSpeed;
                     var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
-                    FillJobInputArray(combinedInputs);
                     //OutPuts
                     var results = new NativeArray<RigidTransform>(count, Allocator.Persistent);
+                    FillJobInputArray(combinedInputs);
 
                     DoJob(count, combinedInputs, results);
                     Affect(delta, speed, results);
@@ -121,10 +145,10 @@ namespace Client
 
         private void Affect(float delta, float speed, NativeArray<RigidTransform> results)
         {
-            foreach (var i in _filter)
+            foreach (var i in _filter1)
             {
-                ref PhysicTranslation physicTranslation = ref _filter.GetEntity(i).Get<PhysicTranslation>();
-                ref EcsEntity view = ref _filter.Get3(i).Entity;
+                ref PhysicTranslation physicTranslation = ref _filter1.GetEntity(i).Get<PhysicTranslation>();
+                ref EcsEntity view = ref _filter1.Get3(i).Entity;
                 ref TargetRotation targetRotaion = ref view.Get<TargetRotation>();
 
                 physicTranslation.Value = delta * speed * results[i].pos;
@@ -149,13 +173,13 @@ namespace Client
 
         private void FillJobInputArray(NativeArray<CombinedInput> combinedInputs)
         {
-            foreach (var i in _filter)
+            foreach (var i in _filter1)
             {
-                Transform transform = _filter.Get2(i).Value;
+                Transform transform = _filter1.Get2(i).Value;
                 CombinedInput combinedInput = new CombinedInput
                 {
                     Up = transform.up,
-                    Rotation = _filter.Get3(i).Entity.Get<RealTransform>().Value.rotation
+                    Rotation = _filter1.Get3(i).Entity.Get<RealTransform>().Value.rotation
                 };
                 combinedInputs[i] = combinedInput;
             }
