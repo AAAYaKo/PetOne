@@ -8,6 +8,6 @@ namespace Client
     {
         public event Action AttackEnded;
 
-        private void OnAttackEnded() => AttackEnded.Invoke();
+        private void OnAttackEnded() => AttackEnded?.Invoke();
     }
 }

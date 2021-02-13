@@ -1,9 +1,8 @@
 using Leopotam.Ecs;
-using UnityEngine;
 
 namespace Client
 {
-    sealed class LandingReactionSystem : IEcsRunSystem
+    sealed class LandingSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<NGravityAttractor, JumpData> _filter = null;
@@ -16,17 +15,14 @@ namespace Client
             {
                 ref JumpData jump = ref _filter.Get2(i);
                 float toGround = _filter.Get1(i).DistanceToGround;
-                if (!(toGround > toFoot))
+                if (toGround <= toFoot && jump.IsInAir)
                 {
-                    if (jump.IsInAir)
-                    {
-                        EcsEntity entity = _filter.GetEntity(i);
-                        entity.Del<JumpData>();
-                        entity.Get<LandedTag>();
-                    }
-                    else
-                        jump.IsInAir = true;
+                    EcsEntity entity = _filter.GetEntity(i);
+                    entity.Del<JumpData>();
+                    entity.Get<LandedTag>();
                 }
+                else if (!jump.IsInAir && toGround > toFoot)
+                    jump.IsInAir = true;
             }
         }
     }

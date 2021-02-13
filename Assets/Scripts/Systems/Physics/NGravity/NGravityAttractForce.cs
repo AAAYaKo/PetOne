@@ -9,7 +9,7 @@ namespace Client
         private const float SLERP_SPEED = 10;
 
         // auto-injected fields.
-        private readonly EcsFilter<NGravityAttractor, PhysicBody, RealTransform>.Exclude<NGravityRotateToTag>.Exclude<WannaSleep> _filter = null;
+        private readonly EcsFilter<NGravityAttractor, PhysicBody, RealTransform>.Exclude<NGravityRotateToTag, WannaSleep> _filter = null;
 
         void IEcsRunSystem.Run()
         {

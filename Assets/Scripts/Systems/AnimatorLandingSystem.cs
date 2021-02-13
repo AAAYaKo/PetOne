@@ -2,7 +2,7 @@ using Leopotam.Ecs;
 
 namespace Client
 {
-    sealed class AnimatorJumpingSystem : IEcsRunSystem
+    sealed class AnimatorLandingSystem : IEcsRunSystem
     {
         private const string JUMP_FRIELD_NAME = "Jump Rising";
 
@@ -11,7 +11,6 @@ namespace Client
 
         void IEcsRunSystem.Run()
         {
-
             foreach (var i in _filter)
             {
                 ref ViewComponent view = ref _filter.Get2(i);

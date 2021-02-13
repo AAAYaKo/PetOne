@@ -18,7 +18,7 @@ MonoBehaviour:
   DefaulFactor: 9.81
   JumpFactor: 1.9620001
   SlerpRotateViewSpeed: 7
-  SlowRunSpeed: 5
+  SlowRunSpeed: 6
   FastRunSpeed: 7
   ToFootDistance: 0.682
   LerpAnimatorSpeed: 10

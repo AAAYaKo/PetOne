@@ -5,10 +5,10 @@ using UnityEngine;
 
 namespace Client
 {
-    sealed class NGravityAffectSystem : IEcsRunSystem
+    sealed class NGravityScanGroundSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<RealTransform, NGravityAttractor>.Exclude<NGravityRotateToTag>.Exclude<WannaSleep> _filter = null;
+        private readonly EcsFilter<RealTransform, NGravityAttractor>.Exclude<NGravityRotateToTag, WannaSleep> _filter = null;
         private readonly LayerMask _gravityLayer = default;
         private readonly InjectData _injectData = null;
 

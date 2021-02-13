@@ -31,25 +31,20 @@ namespace Client
             _world = new EcsWorld();
             _update = new EcsSystems(_world);
             _fixedUpdate = new EcsSystems(_world);
+
 #if UNITY_EDITOR
-            Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_world);
-            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_update);
-            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_fixedUpdate);
+            CreateInspector();
 #endif
             _update
                 // register systems
-                //Init
                 .Add(new PlayerInitSystem())
                 .Add(new InputSystem())
-                //Run
                 .Add(new SlerpRotateSystem())
-                .Add(new ImpulseAttractSystem())
-                .Add(new AnimatorJumpingSystem())
+                .Add(new AnimatorLandingSystem())
                 .Add(new AnimatorWalkingSystem())
 
                 // register one-frame components
                 .OneFrame<LandedTag>()
-                .OneFrame<ForceImpulse>()
 
                 // inject
                 .Inject(_gravityLayer)
@@ -60,22 +55,23 @@ namespace Client
 
             _fixedUpdate
                 // register systems
-                .Add(new NGravitySleep())
-                .Add(new MarkFactorReset())
-                .Add(new ResetNGravityFactor())
                 .Add(new NGravitySourcesInit())
-                .Add(new NGravityAffectSystem())
-                .Add(new ChangeNGravitySource())
+                .Add(new NGravitySleep())
+                .Add(new NGravityScanGroundSystem())
                 .Add(new NGravityAttractForce())
-                .Add(new LandingReactionSystem())
-                .Add(new PhysicTranslationSystem())
-                .Add(new NGravityFactorOverriding())
+                .Add(new ChangeNGravitySource())
                 .Add(new NGravityRotateToNewSource())
 
+                .Add(new PhysicTranslationSystem())
+                .Add(new ImpulseAttractSystem())
+                .Add(new LandingSystem())
+                .Add(new MarkFactorReset())
+                .Add(new ResetNGravityFactor())
+
                 // register one-frame components
+                .OneFrame<ForceImpulse>()
                 .OneFrame<FactorReset>()
                 .OneFrame<ChangeSourceTag>()
-                .OneFrame<FactorOverridedTag>()
 
                 // inject service instances
                 .Inject(_gravityLayer)
@@ -88,6 +84,15 @@ namespace Client
             _fixedUpdate.Init();
             _update.Init();
         }
+
+#if UNITY_EDITOR
+        private void CreateInspector()
+        {
+            Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_world);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_update);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_fixedUpdate);
+        }
+#endif
 
         private void Update()
         {

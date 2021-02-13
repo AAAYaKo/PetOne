@@ -15,10 +15,9 @@ namespace Client
         private const string ATTACK_PROPERTY_NAME = "Attack";
 
         // auto-injected fields.
-        //Ecs-data
-        private readonly EcsFilter<InputTag, RealTransform, ViewComponent>.Exclude<JumpData, AttackTag> _filter1 = null;
-        private readonly EcsFilter<InputTag, RealTransform, ViewComponent>.Exclude<AttackTag> _filter2 = null;
-        private readonly EcsFilter<AttackTag> _filter3 = null;
+        private readonly EcsFilter<InputTag, RealTransform, ViewComponent, NGravityAttractor>.Exclude<JumpData, AttackTag> _filter1 = null;
+        private readonly EcsFilter<AttackTag> _filter2 = null;
+        private readonly EcsFilter<InputTag> _filter3 = null;
         //Config-data
         private readonly Inputs _inputs = null;
         private readonly PlayerTag _player = null;
@@ -38,11 +37,11 @@ namespace Client
             {
                 _direction = x.ReadValue<Vector2>();
                 _needMove = true;
-                foreach (var i in _filter2)
+                foreach (var i in _filter1)
                 {
-                    ref ViewComponent view = ref _filter2.Get3(i);
+                    ref ViewComponent view = ref _filter1.Get3(i);
 
-                    ref TargetSpeedPercent targetSpeed = ref _filter2.GetEntity(i).Get<TargetSpeedPercent>();
+                    ref TargetSpeedPercent targetSpeed = ref _filter1.GetEntity(i).Get<TargetSpeedPercent>();
                     targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
                 }
 
@@ -52,10 +51,10 @@ namespace Client
                 _direction = float2.zero;
                 _needMove = false;
 
-                foreach (var i in _filter2)
+                foreach (var i in _filter1)
                 {
-                    ref EcsEntity entity = ref _filter2.GetEntity(i);
-                    ref ViewComponent view = ref _filter2.Get3(i);
+                    ref EcsEntity entity = ref _filter1.GetEntity(i);
+                    ref ViewComponent view = ref _filter1.Get3(i);
 
                     ref TargetSpeedPercent targetSpeed = ref entity.Get<TargetSpeedPercent>();
                     targetSpeed.Value = 0;
@@ -66,32 +65,33 @@ namespace Client
             };
             _inputs.Player.Jump.performed += _ =>
             {
-                foreach (var i in _filter2)
+                foreach (var i in _filter1)
                 {
-                    EcsEntity entity = _filter2.GetEntity(i);
+                    EcsEntity entity = _filter1.GetEntity(i);
 
-                    ViewComponent view = _filter2.Get3(i);
-                    view.Animator.SetBool(JUMP_PROPERTY_NAME, true);
+                    _filter1.Get3(i).Animator.SetBool(JUMP_PROPERTY_NAME, true);
+                    float3 up = _filter1.Get2(i).Value.up;
 
-                    ref JumpData inAir = ref entity.Get<JumpData>();
-                    inAir.IsInAir = false;
+                    ref var jump = ref entity.Get<JumpData>();
+                    jump.IsInAir = false;
+                    ref var attractor = ref _filter1.Get4(i);
+                    jump.OldFactor = attractor.GravityFactor;
 
-                    ref ForceImpulse force = ref entity.Get<ForceImpulse>();
-                    float3 up = _filter2.Get2(i).Value.up;
+                    attractor.GravityFactor = _injectData.JumpFactor;
 
                     float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
+                    ref var force = ref entity.Get<ForceImpulse>();
                     force.Value = forceVector;
 
                     entity.Del<PhysicTranslation>();
-                    entity.Get<FactorOverridedTag>();
                 }
             };
             _inputs.Player.Jump.canceled += _ =>
             {
-                foreach (var i in _filter2)
+                foreach (var i in _filter3)
                 {
-                    ref EcsEntity entity = ref _filter2.GetEntity(i);
-                    if (entity.Has<FactorOverrided>())
+                    EcsEntity entity = _filter3.GetEntity(i);
+                    if (entity.Has<JumpData>())
                         entity.Get<FactorReset>();
                 }
             };
@@ -109,9 +109,9 @@ namespace Client
 
             _provider.AttackEnded += () =>
             {
-                foreach (var i in _filter3)
+                foreach (var i in _filter2)
                 {
-                    EcsEntity entity = _filter3.GetEntity(i);
+                    EcsEntity entity = _filter2.GetEntity(i);
                     entity.Del<AttackTag>();
                 }
             };
