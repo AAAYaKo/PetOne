@@ -1,5 +1,8 @@
+#define LEOECS_FILTER_EVENTS
 using Leopotam.Ecs;
+using System.Threading.Tasks;
 using Unity.Collections;
+using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
@@ -8,42 +11,57 @@ namespace Client
     sealed class NGravityScanGroundSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<RealTransform, NGravityAttractor>.Exclude<NGravityRotateToTag, WannaSleep> _filter = null;
+        private readonly EcsFilter<RealTransform, NGravityAttractor>.Exclude<NGravityRotateToTag, WannaSleepTag> _filter = null;
         private readonly LayerMask _gravityLayer = default;
         private readonly InjectData _injectData = null;
+
+        [EcsIgnoreInject] private JobHandle handle;
+        [EcsIgnoreInject] private NativeArray<RaycastHit> hits;
+        [EcsIgnoreInject] private NativeArray<SpherecastCommand> commands;
+
 
         void IEcsRunSystem.Run()
         {
             int count = _filter.GetEntitiesCount();
             if (count != 0)
             {
-                //Job
-                var hits = new NativeArray<RaycastHit>(count, Allocator.Persistent);
-                var commands = new NativeArray<SpherecastCommand>(count, Allocator.Persistent);
-
-                //fill NativeArrays
+                hits = new NativeArray<RaycastHit>(count, Allocator.TempJob);
+                commands = new NativeArray<SpherecastCommand>(count, Allocator.TempJob);
                 foreach (var i in _filter)
-                {
-                    Transform transform = _filter.Get1(i).Value;
-                    float3 position = transform.position;
-                    float3 direction = -transform.up;
-                    commands[i] = new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
-                }
-                SpherecastCommand.ScheduleBatch(commands, hits, 1).Complete();
+                    commands[i] = NewComand(i);
 
-                //Get|Add Entity Data
-                foreach (var i in _filter)
-                {
-                    ref NGravityAttractor attractor = ref _filter.Get2(i);
-                    attractor.NormalToGround = hits[i].normal;
-                    attractor.DistanceToGround = hits[i].distance;
-                }
+                handle = SpherecastCommand.ScheduleBatch(commands, hits, 4);
+                handle.Complete();
 
-                //Dispose NativeArrays
+                WriteToAttractors();
+
                 hits.Dispose();
                 commands.Dispose();
             }
         }
 
+        private SpherecastCommand NewComand(int i)
+        {
+            Transform transform = _filter.Get1(i).Value;
+            float3 position = transform.position;
+            float3 direction = -transform.up;
+            return new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
+        }
+
+        private async void WriteToAttractors()
+        {
+            while (!handle.IsCompleted)
+            {
+                await Task.Delay((int)math.round(Time.deltaTime));
+            }
+
+            foreach (var i in _filter)
+            {
+                NGravityAttractor attractor = _filter.Get2(i);
+                attractor.NormalToGround = hits[i].normal;
+                attractor.DistanceToGround = hits[i].distance;
+                _filter.GetEntity(i).Replace(attractor);
+            }
+        }
     }
 }

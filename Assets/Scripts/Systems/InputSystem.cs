@@ -1,260 +1,122 @@
 using Leopotam.Ecs;
-using Unity.Burst;
-using Unity.Collections;
-using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 namespace Client
 {
-    sealed class InputSystem : IEcsInitSystem, IEcsRunSystem
+    sealed class InputSystem : IEcsInitSystem, IEcsDestroySystem
     {
-        //Const
-        private const float SLOW_SPEED_PERCENT = 0.75f;
-        private const string JUMP_PROPERTY_NAME = "Jump Rising";
         private const string ATTACK_PROPERTY_NAME = "Attack";
 
         // auto-injected fields.
-        private readonly EcsFilter<InputTag, RealTransform, ViewComponent, NGravityAttractor>.Exclude<JumpData, AttackTag> _filter1 = null;
+        private readonly EcsFilter<ViewComponent, InputTag> _filter1 = null;
         private readonly EcsFilter<AttackTag> _filter2 = null;
-        private readonly EcsFilter<InputTag> _filter3 = null;
-        //Config-data
+        private readonly EcsFilter<JumpData> _filter3 = null;
         private readonly Inputs _inputs = null;
-        private readonly PlayerTag _player = null;
         private readonly AnimationEventsProvider _provider = null;
-        private readonly InjectData _injectData = null;
-
-        //EcsIgnore
-        [EcsIgnoreInject] private float2 _direction = float2.zero;
-        [EcsIgnoreInject] private bool _needMove = false;
 
 
         public void Init()
         {
-            float jumpForce = _injectData.JumpForce;
+            _inputs.Player.Move.performed += OnMovePerformed;
+            _inputs.Player.Move.canceled += OnMoveCanceled;
+            _inputs.Player.Run.performed += OnRunPerformed;
+            _inputs.Player.Run.canceled += OnRunCanceled;
+            _inputs.Player.Jump.performed += OnJumpPerformed;
+            _inputs.Player.Jump.canceled += OnJumpCanceled;
+            _inputs.Player.Attack.performed += OnAttackPerformed;
+            _provider.AttackEnded += OnAttackEnded;
+        }
+        public void Destroy()
+        {
+            _inputs.Player.Move.performed -= OnMovePerformed;
+            _inputs.Player.Move.canceled -= OnMoveCanceled;
+            _inputs.Player.Run.performed -= OnRunPerformed;
+            _inputs.Player.Run.canceled -= OnRunCanceled;
+            _inputs.Player.Jump.performed -= OnJumpPerformed;
+            _inputs.Player.Jump.canceled -= OnJumpCanceled;
+            _inputs.Player.Attack.performed -= OnAttackPerformed;
+            _provider.AttackEnded -= OnAttackEnded;
+        }
 
-            _inputs.Player.Move.performed += x =>
+        private void OnMovePerformed(InputAction.CallbackContext context)
+        {
+            var inputDirection = context.ReadValue<Vector2>();
+
+            foreach (var i in _filter1)
             {
-                _direction = x.ReadValue<Vector2>();
-                _needMove = true;
-                foreach (var i in _filter1)
-                {
-                    ref ViewComponent view = ref _filter1.Get3(i);
+                var entity = _filter1.GetEntity(i);
+                entity.Get<TargetSpeedPercentChangedTag>();
 
-                    ref TargetSpeedPercent targetSpeed = ref _filter1.GetEntity(i).Get<TargetSpeedPercent>();
-                    targetSpeed.Value = math.length(_direction) * SLOW_SPEED_PERCENT;
+                ref var direction = ref entity.Get<InputDirection>();
+                direction.Value = inputDirection;
+            }
+        }
+        private void OnMoveCanceled(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter1)
+            {
+                ref var entity = ref _filter1.GetEntity(i);
+
+                ref var view = ref _filter1.Get1(i);
+                view.TargetSpeedPercent = 0;
+
+                entity.Del<InputDirection>();
+                entity.Del<PhysicTranslation>();
+            }
+        }
+        private void OnRunPerformed(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter1)
+            {
+                var entity = _filter1.GetEntity(i);
+                if (!entity.Has<TiredTag>())
+                {
+                    entity.Get<TargetSpeedPercentChangedTag>();
+                    entity.Get<RunTag>();
                 }
-
-            };
-            _inputs.Player.Move.canceled += _ =>
+            }
+        }
+        private void OnRunCanceled(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter1)
             {
-                _direction = float2.zero;
-                _needMove = false;
-
-                foreach (var i in _filter1)
-                {
-                    ref EcsEntity entity = ref _filter1.GetEntity(i);
-                    ref ViewComponent view = ref _filter1.Get3(i);
-
-                    ref TargetSpeedPercent targetSpeed = ref entity.Get<TargetSpeedPercent>();
-                    targetSpeed.Value = 0;
-
-                    view.Entity.Del<TargetRotation>();
-                    entity.Del<PhysicTranslation>();
-                }
-            };
-            _inputs.Player.Jump.performed += _ =>
+                var entity = _filter1.GetEntity(i);
+                entity.Get<TargetSpeedPercentChangedTag>();
+                entity.Del<RunTag>();
+            }
+        }
+        private void OnJumpPerformed(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter1)
+                _filter1.GetEntity(i).Get<JumpQueryTag>();
+        }
+        private void OnJumpCanceled(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter3)
+                _filter3.GetEntity(i).Get<FactorReset>();
+        }
+        private void OnAttackPerformed(InputAction.CallbackContext context)
+        {
+            foreach (var i in _filter1)
             {
-                foreach (var i in _filter1)
+                EcsEntity entity = _filter1.GetEntity(i);
+                if (!entity.Has<AttackTag>())
                 {
-                    EcsEntity entity = _filter1.GetEntity(i);
-
-                    _filter1.Get3(i).Animator.SetBool(JUMP_PROPERTY_NAME, true);
-                    float3 up = _filter1.Get2(i).Value.up;
-
-                    ref var jump = ref entity.Get<JumpData>();
-                    jump.IsInAir = false;
-                    ref var attractor = ref _filter1.Get4(i);
-                    jump.OldFactor = attractor.GravityFactor;
-
-                    attractor.GravityFactor = _injectData.JumpFactor;
-
-                    float3 forceVector = _needMove ? GetForceVectorWithMovement(entity, up, jumpForce) : GetForceVectorWithoutMovement(up, jumpForce);
-                    ref var force = ref entity.Get<ForceImpulse>();
-                    force.Value = forceVector;
-
-                    entity.Del<PhysicTranslation>();
-                }
-            };
-            _inputs.Player.Jump.canceled += _ =>
-            {
-                foreach (var i in _filter3)
-                {
-                    EcsEntity entity = _filter3.GetEntity(i);
-                    if (entity.Has<JumpData>())
-                        entity.Get<FactorReset>();
-                }
-            };
-            _inputs.Player.Attack.performed += _ =>
-            {
-                foreach (var i in _filter1)
-                {
-                    EcsEntity entity = _filter1.GetEntity(i);
-                    ViewComponent view = _filter1.Get3(i);
+                    ViewComponent view = _filter1.Get1(i);
                     entity.Del<PhysicTranslation>();
                     entity.Get<AttackTag>();
                     view.Animator.SetTrigger(ATTACK_PROPERTY_NAME);
                 }
-            };
-
-            _provider.AttackEnded += () =>
-            {
-                foreach (var i in _filter2)
-                {
-                    EcsEntity entity = _filter2.GetEntity(i);
-                    entity.Del<AttackTag>();
-                }
-            };
-        }
-
-
-        public void Run()
-        {
-            if (_needMove)
-            {
-                int count = _filter1.GetEntitiesCount();
-                if (count != 0)
-                {
-                    //Prepare Data For Job
-                    //Inputs
-                    float delta = Time.fixedDeltaTime;
-                    float speed = _injectData.SlowRunSpeed;
-                    var combinedInputs = new NativeArray<CombinedInput>(count, Allocator.Persistent);
-                    //OutPuts
-                    var results = new NativeArray<RigidTransform>(count, Allocator.Persistent);
-                    FillJobInputArray(combinedInputs);
-
-                    DoJob(count, combinedInputs, results);
-                    Affect(delta, speed, results);
-
-                    results.Dispose();
-                    combinedInputs.Dispose();
-                }
             }
         }
-
-        private void Affect(float delta, float speed, NativeArray<RigidTransform> results)
+        private void OnAttackEnded()
         {
-            foreach (var i in _filter1)
+            foreach (var i in _filter2)
             {
-                ref PhysicTranslation physicTranslation = ref _filter1.GetEntity(i).Get<PhysicTranslation>();
-                ref EcsEntity view = ref _filter1.Get3(i).Entity;
-                ref TargetRotation targetRotaion = ref view.Get<TargetRotation>();
-
-                physicTranslation.Value = delta * speed * results[i].pos;
-                targetRotaion.Value = results[i].rot;
+                EcsEntity entity = _filter2.GetEntity(i);
+                entity.Del<AttackTag>();
             }
-        }
-
-        private void DoJob(int count, NativeArray<CombinedInput> combinedInputs, NativeArray<RigidTransform> results)
-        {
-            var job = new CalculateJob
-            {
-                Direction = _direction,
-                CombinedInput = combinedInputs,
-                CameraRight = _player.CameraTransform.right,
-                CameraForward = _player.CameraTransform.forward,
-                Result = results
-            };
-            job
-            .Schedule(count, 1)
-            .Complete();
-        }
-
-        private void FillJobInputArray(NativeArray<CombinedInput> combinedInputs)
-        {
-            foreach (var i in _filter1)
-            {
-                Transform transform = _filter1.Get2(i).Value;
-                CombinedInput combinedInput = new CombinedInput
-                {
-                    Up = transform.up,
-                    Rotation = _filter1.Get3(i).Entity.Get<RealTransform>().Value.rotation
-                };
-                combinedInputs[i] = combinedInput;
-            }
-        }
-
-        private float3 GetForceVectorWithoutMovement(float3 up, float force) => up * force;
-
-        private float3 GetForceVectorWithMovement(EcsEntity entity, float3 up, float force)
-        {
-            float3 forceVector;
-            PhysicTranslation translation = entity.Get<PhysicTranslation>();
-            forceVector = math.normalize(translation.Value) + up;
-            forceVector = math.normalize(forceVector) * force;
-            return forceVector;
-        }
-
-        [BurstCompile]
-        private struct CalculateJob : IJobParallelFor
-        {
-            //Inputs
-            [ReadOnly] public float2 Direction; //Player Input
-            [ReadOnly] public float3 CameraRight;
-            [ReadOnly] public float3 CameraForward;
-            [ReadOnly] public NativeArray<CombinedInput> CombinedInput;
-            //Outputs
-            ///<summary>
-            /// Position = Translation
-            ///</summary>
-            public NativeArray<RigidTransform> Result;
-
-            public void Execute(int index)
-            {
-                CalculateTranslation(index);
-                CalculateRotation(index);
-            }
-
-            private void CalculateRotation(int index)
-            {
-                bool2 isZero = Direction == float2.zero;
-                if (isZero.x && isZero.y)
-                {
-                    RigidTransform outPut = Result[index];
-                    outPut.rot = CombinedInput[index].Rotation;
-                    Result[index] = outPut;
-                }
-                else
-                {
-                    RigidTransform outPut = Result[index];
-                    outPut.rot = quaternion.LookRotation(outPut.pos, CombinedInput[index].Up);
-                    Result[index] = outPut;
-                }
-            }
-
-            private void CalculateTranslation(int index)
-            {
-                float3 forward = ProjetOnPlain(CameraForward, CombinedInput[index].Up) * Direction.y;
-                float3 right = ProjetOnPlain(CameraRight, CombinedInput[index].Up) * Direction.x;
-
-                float3 translation = right + forward;
-
-                RigidTransform outPut = Result[index];
-                outPut.pos = translation;
-                Result[index] = outPut;
-            }
-
-            private float3 ProjetOnPlain(float3 vector, float3 normal)
-            {
-                return vector - math.project(vector, normal);
-            }
-        }
-
-        private struct CombinedInput
-        {
-            public float3 Up;
-            public quaternion Rotation;
         }
     }
 }

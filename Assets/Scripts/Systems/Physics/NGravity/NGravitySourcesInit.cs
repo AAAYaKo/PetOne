@@ -7,7 +7,7 @@ namespace Client
     {
         // auto-injected fields.
         private readonly EcsWorld _world = null;
-        private readonly NGravitySourceTag[] _sources = null;
+        private readonly NGravitySourceConfig[] _sources = null;
 
         public void PreInit()
         {

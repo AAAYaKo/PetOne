@@ -12,18 +12,17 @@ namespace Client
         private EcsSystems _update;
         private EcsSystems _fixedUpdate;
 
-        private PlayerTag _player;
+        private PlayerConfig _player;
         private Inputs _inputs;
         private AnimationEventsProvider _provider;
-        private NGravitySourceTag[] _sources;
-
+        private NGravitySourceConfig[] _sources;
 
         private void Awake()
         {
             _inputs = new Inputs();
-            _player = FindObjectOfType<PlayerTag>();
+            _player = FindObjectOfType<PlayerConfig>();
             _provider = FindObjectOfType<AnimationEventsProvider>();
-            _sources = FindObjectsOfType<NGravitySourceTag>();
+            _sources = FindObjectsOfType<NGravitySourceConfig>();
         }
 
         private void Start()
@@ -39,12 +38,18 @@ namespace Client
                 // register systems
                 .Add(new PlayerInitSystem())
                 .Add(new InputSystem())
+                .Add(new JumpSystem())
                 .Add(new SlerpRotateSystem())
                 .Add(new AnimatorLandingSystem())
                 .Add(new AnimatorWalkingSystem())
+                .Add(new StaminaSpendSystem())
+                .Add(new StaminaRestorationSystem())
+                .Add(new TargetSpeedPercentChangeSystem())
 
                 // register one-frame components
+                .OneFrame<JumpQueryTag>()
                 .OneFrame<LandedTag>()
+                .OneFrame<TargetSpeedPercentChangedTag>()
 
                 // inject
                 .Inject(_gravityLayer)
@@ -55,13 +60,8 @@ namespace Client
 
             _fixedUpdate
                 // register systems
-                .Add(new NGravitySourcesInit())
-                .Add(new NGravitySleep())
-                .Add(new NGravityScanGroundSystem())
-                .Add(new NGravityAttractForce())
-                .Add(new ChangeNGravitySource())
-                .Add(new NGravityRotateToNewSource())
-
+                .AddNGravity()
+                .Add(new TranslationCalculateSystem())
                 .Add(new PhysicTranslationSystem())
                 .Add(new ImpulseAttractSystem())
                 .Add(new LandingSystem())
@@ -76,7 +76,8 @@ namespace Client
                 // inject service instances
                 .Inject(_gravityLayer)
                 .Inject(_injectData)
-                .Inject(_sources);
+                .Inject(_sources)
+                .Inject(_player);
 
             _update.ProcessInjects();
             _fixedUpdate.ProcessInjects();
@@ -131,6 +132,22 @@ namespace Client
                 _world.Destroy();
                 _world = null;
             }
+        }
+
+    }
+
+    internal static class SystemsExtentions
+    {
+        public static EcsSystems AddNGravity(this EcsSystems systems)
+        {
+            systems
+                .Add(new NGravitySourcesInit())
+                .Add(new NGravitySleep())
+                .Add(new NGravityScanGroundSystem())
+                .Add(new NGravityAttractForce())
+                .Add(new ChangeNGravitySource())
+                .Add(new NGravityRotateToNewSource());
+            return systems;
         }
     }
 }

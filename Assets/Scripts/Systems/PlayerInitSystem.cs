@@ -7,7 +7,7 @@ namespace Client
     {
         // auto-injected fields.
         private readonly EcsWorld _world = null;
-        private readonly PlayerTag _player = null;
+        private readonly PlayerConfig _player = null;
         private readonly InjectData _injectData = null;
 
         public void Init()
@@ -20,6 +20,14 @@ namespace Client
             RealTransformInit(player, playerTransform);
             PhysicBodyInit(player, playerRigidbody);
             GravityAttractorInit(player);
+            StaminaInit(player);
+        }
+
+        private void StaminaInit(EcsEntity player)
+        {
+            ref Stamina stamina = ref player.Get<Stamina>();
+            stamina.Amount = _injectData.StaminaAmount;
+            stamina.RecoverySpeed = _injectData.StaminaRecoverySpeed;
         }
 
         private void GravityAttractorInit(EcsEntity player)

@@ -1,5 +1,4 @@
-﻿using System;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Client
 {
@@ -14,8 +13,13 @@ namespace Client
         public float SlerpRotateViewSpeed;
         public float SlowRunSpeed;
         public float FastRunSpeed;
+        public float SlowRunPercent = 0.75f;
+        public float FastRunPercent = 1;
         public float ToFootDistance;
         public float LerpAnimatorSpeed;
         public float JumpForce;
+        public float StaminaAmount;
+        public float StaminaRecoverySpeed;
+        public float SpeedOfStaminaSpendOnRun;
     }
 }

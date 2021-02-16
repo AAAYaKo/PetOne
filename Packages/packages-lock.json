@@ -14,6 +14,13 @@
       "dependencies": {},
       "hash": "47a1a8ea26342894459ec478d56856c3f71a7cab"
     },
+    "com.push-pop.unitymvvm": {
+      "version": "https://github.com/push-pop/Unity-MVVM.git#upm",
+      "depth": 0,
+      "source": "git",
+      "dependencies": {},
+      "hash": "22b282b2c875e62a18959d7ce3f6fd69b4c50cf9"
+    },
     "com.unity.animation.rigging": {
       "version": "1.0.3",
       "depth": 0,

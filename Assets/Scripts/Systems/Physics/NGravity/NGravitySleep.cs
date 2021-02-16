@@ -23,14 +23,14 @@ namespace Client
                 if (entity.Has<PhysicTranslation>())
                 {
                     attractor.Time = 0;
-                    entity.Del<WannaSleep>();
+                    entity.Del<WannaSleepTag>();
                     continue;
                 }
 
                 bool wannaSleep = body.Value.velocity.sqrMagnitude <= SLEEP_THRESHOLD;
 
                 if (wannaSleep && (attractor.Time >= SLEEP_DELLAY))
-                    entity.Get<WannaSleep>();
+                    entity.Get<WannaSleepTag>();
 
                 else if (wannaSleep)
                     attractor.Time += delta;
@@ -38,7 +38,7 @@ namespace Client
                 else
                 {
                     attractor.Time = 0;
-                    entity.Del<WannaSleep>();
+                    entity.Del<WannaSleepTag>();
                 }
             }
         }

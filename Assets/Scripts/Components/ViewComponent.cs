@@ -7,5 +7,6 @@ namespace Client
     {
         public EcsEntity Entity;
         public Animator Animator;
+        public float TargetSpeedPercent;
     }
 }
