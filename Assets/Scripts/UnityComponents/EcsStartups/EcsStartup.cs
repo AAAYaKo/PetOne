@@ -17,6 +17,7 @@ namespace Client
         private AnimationEventsProvider _provider;
         private NGravitySourceConfig[] _sources;
 
+
         private void Awake()
         {
             _inputs = new Inputs();
@@ -44,6 +45,7 @@ namespace Client
                 .Add(new AnimatorWalkingSystem())
                 .Add(new StaminaSpendSystem())
                 .Add(new StaminaRestorationSystem())
+                .Add(new StaminaHideSystem())
                 .Add(new TargetSpeedPercentChangeSystem())
 
                 // register one-frame components
@@ -63,6 +65,7 @@ namespace Client
                 .AddNGravity()
                 .Add(new TranslationCalculateSystem())
                 .Add(new PhysicTranslationSystem())
+                .Add(new StaminaViewTranslateSystem())
                 .Add(new ImpulseAttractSystem())
                 .Add(new LandingSystem())
                 .Add(new MarkFactorReset())

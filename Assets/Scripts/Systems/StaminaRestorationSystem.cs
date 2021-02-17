@@ -6,8 +6,11 @@ namespace Client
     sealed class StaminaRestorationSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<Stamina> _filter = null;
+        private readonly EcsFilter<Stamina>.Exclude<StaminaHideQuery> _filter = null;
         private readonly InjectData _injectData = null;
+
+        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+
 
         void IEcsRunSystem.Run()
         {
@@ -26,7 +29,12 @@ namespace Client
                         {
                             stamina.Amount = amount;
                             entity.Del<TiredTag>();
+                            repository.IsStaminaTired = false;
+                            ref var hide = ref entity.Get<StaminaHideQuery>();
+                            hide.TimeToHide = _injectData.HideStaminaTime;
                         }
+
+                        repository.StaminaAmount = stamina.Amount;
                     }
                 }
             }

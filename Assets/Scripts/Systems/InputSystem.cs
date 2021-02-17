@@ -14,6 +14,7 @@ namespace Client
         private readonly EcsFilter<JumpData> _filter3 = null;
         private readonly Inputs _inputs = null;
         private readonly AnimationEventsProvider _provider = null;
+        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
 
 
         public void Init()
@@ -70,10 +71,11 @@ namespace Client
             foreach (var i in _filter1)
             {
                 var entity = _filter1.GetEntity(i);
-                if (!entity.Has<TiredTag>())
+                if (!entity.Has<TiredTag>() && !entity.Has<JumpData>())
                 {
                     entity.Get<TargetSpeedPercentChangedTag>();
                     entity.Get<RunTag>();
+                    repository.IsStaminaVisible = true;
                 }
             }
         }

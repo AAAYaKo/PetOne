@@ -7,14 +7,17 @@ namespace Client
     {
         // auto-injected fields.
         private readonly EcsWorld _world = null;
-        private readonly PlayerConfig _player = null;
+        private readonly PlayerConfig _playerConfig = null;
         private readonly InjectData _injectData = null;
+
+        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+
 
         public void Init()
         {
-            EcsEntity player = _world.NewEntity();
-            Transform playerTransform = _player.PlayerTransform;
-            Rigidbody playerRigidbody = _player.PlayerRigidbody;
+            var player = _world.NewEntity();
+            var playerTransform = _playerConfig.SelfTransform;
+            var playerRigidbody = _playerConfig.SelfRigidbody;
             player.Get<InputTag>();
             ViewTransformInit(player);
             RealTransformInit(player, playerTransform);
@@ -25,38 +28,39 @@ namespace Client
 
         private void StaminaInit(EcsEntity player)
         {
-            ref Stamina stamina = ref player.Get<Stamina>();
+            ref var stamina = ref player.Get<Stamina>();
             stamina.Amount = _injectData.StaminaAmount;
             stamina.RecoverySpeed = _injectData.StaminaRecoverySpeed;
+            repository.StaminaAmount = stamina.Amount;
         }
 
         private void GravityAttractorInit(EcsEntity player)
         {
-            ref NGravityAttractor attractor = ref player.Get<NGravityAttractor>();
+            ref var attractor = ref player.Get<NGravityAttractor>();
             attractor.GravityFactor = _injectData.DefaulFactor;
             player.Get<ChangeSourceTag>();
         }
 
         private void ViewTransformInit(EcsEntity player)
         {
-            EcsEntity viewEntity = _world.NewEntity();
-            ref RealTransform transform = ref viewEntity.Get<RealTransform>();
-            transform.Value = _player.ViewTransform;
+            var viewEntity = _world.NewEntity();
+            ref var transform = ref viewEntity.Get<RealTransform>();
+            transform.Value = _playerConfig.ViewTransform;
 
-            ref ViewComponent viewComponent = ref player.Get<ViewComponent>();
+            ref var viewComponent = ref player.Get<ViewComponent>();
             viewComponent.Entity = viewEntity;
-            viewComponent.Animator = _player.ViewAnimator;
+            viewComponent.Animator = _playerConfig.ViewAnimator;
         }
 
         private void PhysicBodyInit(EcsEntity player, Rigidbody playerRigidbody)
         {
-            ref PhysicBody body = ref player.Get<PhysicBody>();
+            ref var body = ref player.Get<PhysicBody>();
             body.Value = playerRigidbody;
         }
 
         private void RealTransformInit(EcsEntity player, Transform playerTransform)
         {
-            ref RealTransform realTransform = ref player.Get<RealTransform>();
+            ref var realTransform = ref player.Get<RealTransform>();
             realTransform.Value = playerTransform;
         }
     }

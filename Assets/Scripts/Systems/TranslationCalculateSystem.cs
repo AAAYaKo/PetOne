@@ -8,7 +8,6 @@ namespace Client
     {
         // auto-injected fields.
         private readonly EcsFilter<InputDirection, RealTransform, ViewComponent>.Exclude<JumpData> _filter = null;
-        private readonly PlayerConfig _player = null;
         private readonly InjectData _injectData = null;
 
         [EcsIgnoreInject] private Transform camera;
@@ -20,7 +19,7 @@ namespace Client
 
         public void Init()
         {
-            camera = _player.CameraTransform;
+            camera = _injectData.CameraTransform;
             slowDeltaSpeed = Time.fixedDeltaTime * _injectData.SlowRunSpeed;
             fastDeltaSpeed = Time.fixedDeltaTime * _injectData.FastRunSpeed;
         }

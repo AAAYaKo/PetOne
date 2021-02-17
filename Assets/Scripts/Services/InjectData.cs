@@ -21,5 +21,15 @@ namespace Client
         public float StaminaAmount;
         public float StaminaRecoverySpeed;
         public float SpeedOfStaminaSpendOnRun;
+        public float HideStaminaTime;
+        public Camera Camera;
+        public Transform CameraTransform;
+
+
+        private void OnEnable()
+        {
+            Camera = Camera.main;
+            CameraTransform = Camera.transform;
+        }
     }
 }
