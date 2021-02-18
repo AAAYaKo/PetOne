@@ -34,7 +34,7 @@ namespace Client
             {
                 EcsEntity entity = _filter.GetEntity(i);
 
-                if (entity.Has<AttackTag>())
+                if (entity.Has<BlockMoveTag>())
                     entity.Del<PhysicTranslation>();
                 else
                 {

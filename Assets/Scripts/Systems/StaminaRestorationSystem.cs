@@ -6,7 +6,7 @@ namespace Client
     sealed class StaminaRestorationSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<Stamina>.Exclude<StaminaHideQuery> _filter = null;
+        private readonly EcsFilter<Stamina> _filter = null;
         private readonly InjectData _injectData = null;
 
         [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;

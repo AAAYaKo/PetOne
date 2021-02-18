@@ -19,7 +19,7 @@ namespace Client
             var playerTransform = _playerConfig.SelfTransform;
             var playerRigidbody = _playerConfig.SelfRigidbody;
             player.Get<InputTag>();
-            ViewTransformInit(player);
+            ViewInit(player);
             RealTransformInit(player, playerTransform);
             PhysicBodyInit(player, playerRigidbody);
             GravityAttractorInit(player);
@@ -41,7 +41,7 @@ namespace Client
             player.Get<ChangeSourceTag>();
         }
 
-        private void ViewTransformInit(EcsEntity player)
+        private void ViewInit(EcsEntity player)
         {
             var viewEntity = _world.NewEntity();
             ref var transform = ref viewEntity.Get<RealTransform>();
