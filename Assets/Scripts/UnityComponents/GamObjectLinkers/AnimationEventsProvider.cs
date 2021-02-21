@@ -1,7 +1,7 @@
 using System;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Linkers
 {
     [RequireComponent(typeof(Animator))]
     public class AnimationEventsProvider : MonoBehaviour

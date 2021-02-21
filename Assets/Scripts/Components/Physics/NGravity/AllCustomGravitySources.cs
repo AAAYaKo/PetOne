@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct AllCustomGravitySources
+    internal struct AllCustomGravitySources
     {
         public NGravitySource[] Sources;
     }

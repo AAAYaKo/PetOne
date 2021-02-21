@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct TargetSpeedPercent
+    internal struct TargetSpeedPercent
     {
         public float Value;
     }

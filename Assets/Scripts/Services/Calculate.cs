@@ -1,8 +1,8 @@
 ﻿using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Services
 {
-    static class Calculate
+    internal static class Calculate
     {
         /// <summary>
         /// OpenGL realisation http://www.opengl-tutorial.org/ru/intermediate-tutorials/tutorial-17-quaternions/

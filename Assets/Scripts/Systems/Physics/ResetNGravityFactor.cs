@@ -1,11 +1,13 @@
 using Leopotam.Ecs;
+using PetOne.Components;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class ResetNGravityFactor : IEcsRunSystem
+    internal sealed class ResetNGravityFactor : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<FactorReset, JumpData, NGravityAttractor> _filter = null;
+        private readonly EcsFilter<FactorResetTag, JumpData, NGravityAttractor> _filter = null;
+
 
         void IEcsRunSystem.Run()
         {

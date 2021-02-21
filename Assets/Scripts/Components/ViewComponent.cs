@@ -1,9 +1,9 @@
 using Leopotam.Ecs;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct ViewComponent
+    internal struct ViewComponent
     {
         public EcsEntity Entity;
         public Animator Animator;

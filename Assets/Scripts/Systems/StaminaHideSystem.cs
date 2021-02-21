@@ -1,9 +1,11 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Ui;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class StaminaHideSystem : IEcsRunSystem
+    internal sealed class StaminaHideSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<StaminaHideQuery> _filter1 = null;

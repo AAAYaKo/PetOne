@@ -1,14 +1,15 @@
-#define LEOECS_FILTER_EVENTS
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class NGravityScanGroundSystem : IEcsRunSystem
+    internal sealed class NGravityScanGroundSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<RealTransform, NGravityAttractor>.Exclude<NGravityRotateToTag, WannaSleepTag> _filter = null;

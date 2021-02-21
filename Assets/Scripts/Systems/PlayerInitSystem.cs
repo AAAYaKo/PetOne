@@ -1,9 +1,13 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Linkers;
+using PetOne.Services;
+using PetOne.Ui;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class PlayerInitSystem : IEcsInitSystem
+    internal sealed class PlayerInitSystem : IEcsInitSystem
     {
         // auto-injected fields.
         private readonly EcsWorld _world = null;

@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct PhysicBody
+    internal struct PhysicBody
     {
         public Rigidbody Value;
     }

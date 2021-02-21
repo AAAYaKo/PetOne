@@ -1,13 +1,12 @@
 using Leopotam.Ecs;
-using Unity.Burst;
-using Unity.Collections;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.Jobs;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class NGravityRotateToNewSource : IEcsRunSystem
+    internal sealed class NGravityRotateToNewSource : IEcsRunSystem
     {
         private const float APPROXIMATION = 0.99f;
 
@@ -18,51 +17,19 @@ namespace Client
 
         void IEcsRunSystem.Run()
         {
-            int count = _filter.GetEntitiesCount();
-            if(count != 0)
+            float delta = Time.deltaTime * _injectData.SlerpToGravitySourceSpeed;
+
+            foreach (var i in _filter)
             {
-                float delta = Time.deltaTime;
-                NativeArray<float3> up = new NativeArray<float3>(count, Allocator.Persistent);
-                NativeArray<float3> upTarget = new NativeArray<float3>(count, Allocator.Persistent);
-                Transform[] transforms = new Transform[count];
-                foreach (var i in _filter)
-                {
-                    ref var attractor = ref _filter.Get1(i);
-                    transforms[i] = _filter.Get2(i).Value;
-                    up[i] = transforms[i].up;
-                    upTarget[i] = attractor.NormalToGround;
-                    if (math.dot(up[i], upTarget[i]) > APPROXIMATION)
-                        _filter.GetEntity(i).Del<NGravityRotateToTag>();
-                }
-                TransformAccessArray accessArray = new TransformAccessArray(transforms);
+                ref var attractor = ref _filter.Get1(i);
+                var transform = _filter.Get2(i).Value;
+                float3 up = transform.up;
+                float3 upTarget = attractor.NormalToGround;
+                var angle = Calculate.FromToRotation(up, upTarget);
+                transform.rotation = math.slerp(transform.rotation, angle * transform.rotation, delta);
 
-                var job = new RotateJob
-                {
-                    Up = up,
-                    UpTarget = upTarget,
-                    Time = _injectData.SlerpToGravitySourceSpeed * delta
-                };
-                job
-                    .Schedule(accessArray)
-                    .Complete();
-
-                accessArray.Dispose();
-                upTarget.Dispose();
-                up.Dispose();
-            }
-        }
-
-        [BurstCompile]
-        private struct RotateJob : IJobParallelForTransform
-        {
-            [ReadOnly] public NativeArray<float3> Up;
-            [ReadOnly] public NativeArray<float3> UpTarget;
-            [ReadOnly] public float Time;
-
-            public void Execute(int index, TransformAccess transform)
-            {
-                    quaternion angle = Calculate.FromToRotation(Up[index], UpTarget[index]);
-                    transform.rotation = math.slerp(transform.rotation, angle * transform.rotation, Time);
+                if (math.dot(up, upTarget) > APPROXIMATION)
+                    _filter.GetEntity(i).Del<NGravityRotateToTag>();
             }
         }
     }

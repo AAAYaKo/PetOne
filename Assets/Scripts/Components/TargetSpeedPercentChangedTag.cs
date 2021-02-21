@@ -1,6 +1,6 @@
 using Leopotam.Ecs;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct TargetSpeedPercentChangedTag : IEcsIgnoreInFilter { }
+    internal struct TargetSpeedPercentChangedTag : IEcsIgnoreInFilter { }
 }

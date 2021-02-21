@@ -1,10 +1,12 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class TranslationCalculateSystem : IEcsRunSystem, IEcsInitSystem
+    internal sealed class TranslationCalculateSystem : IEcsRunSystem, IEcsInitSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<InputDirection, RealTransform, ViewComponent>.Exclude<JumpData> _filter = null;

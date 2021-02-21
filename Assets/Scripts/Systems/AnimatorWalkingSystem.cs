@@ -1,25 +1,27 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
     sealed class AnimatorWalkingSystem : IEcsRunSystem
     {
         private const string SPEED_FIELD_NAME = "SpeedPercent";
-
         private const float APPROXIMATION = 0.000001f;
 
         // auto-injected fields.
         private readonly EcsFilter<ViewComponent> _filter = null;
         private readonly InjectData _injectData = null;
 
+
         void IEcsRunSystem.Run()
         {
             float delta = Time.deltaTime;
             foreach (var i in _filter)
             {
-                ref ViewComponent view = ref _filter.Get1(i);
+                ref var view = ref _filter.Get1(i);
                 LerpSpeedPercent(delta, i, view);
             }
         }

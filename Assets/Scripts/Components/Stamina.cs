@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct Stamina
+    internal struct Stamina
     {
         public float Amount;
         public float RecoverySpeed;

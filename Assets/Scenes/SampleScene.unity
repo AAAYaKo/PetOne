@@ -233,7 +233,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 20116
+  Id: 20228
   Position:
     x: 0
     y: 0
@@ -506,7 +506,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 20152
+  Id: 20264
   Position:
     x: -31.12
     y: 0
@@ -892,7 +892,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6254f6ce704a4a448c7af06a9bf9d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewModelName: StaminaViewModel
+  ViewModelName: PetOne.Ui.ViewModel.StaminaViewModel
   BindingMode: 0
   SrcPropertyName: Position
   DstPropertyName: Position
@@ -913,7 +913,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6254f6ce704a4a448c7af06a9bf9d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewModelName: StaminaViewModel
+  ViewModelName: PetOne.Ui.ViewModel.StaminaViewModel
   BindingMode: 0
   SrcPropertyName: Amount
   DstPropertyName: Amount
@@ -970,7 +970,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f6254f6ce704a4a448c7af06a9bf9d09, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewModelName: StaminaViewModel
+  ViewModelName: PetOne.Ui.ViewModel.StaminaViewModel
   BindingMode: 0
   SrcPropertyName: IsTired
   DstPropertyName: IsTired
@@ -991,7 +991,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7d4a2a4e980aca64fa47198e564b8ffc, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ViewModelName: StaminaViewModel
+  ViewModelName: PetOne.Ui.ViewModel.StaminaViewModel
   SrcPropertyName: IsVisible
   DstPropertyName: ElementVisibility
   SrcPropertyPath: 
@@ -1258,6 +1258,130 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1209465330
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1209465331}
+  - component: {fileID: 1209465333}
+  - component: {fileID: 1209465332}
+  - component: {fileID: 1209465335}
+  - component: {fileID: 1209465334}
+  m_Layer: 5
+  m_Name: Health View
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!224 &1209465331
+RectTransform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209465330}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1261379723}
+  m_RootOrder: 1
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+  m_AnchorMin: {x: 0, y: 1}
+  m_AnchorMax: {x: 0, y: 1}
+  m_AnchoredPosition: {x: 100, y: -100}
+  m_SizeDelta: {x: 100, y: 100}
+  m_Pivot: {x: 0.5, y: 0.5}
+--- !u!114 &1209465332
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209465330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 64294e2b9d6e45347bf701251405f4e7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _visibility: 0
+  _collapse: 0
+  _alpha: 1
+  _fadeTime: 0.2
+  _heartPrephab: {fileID: 2771698103035969962, guid: 49b3965ae7ad82c4a9eed1a86ca037f5, type: 3}
+--- !u!114 &1209465333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209465330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 30649d3a9faa99c48a7b1166b86bf2a0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_Padding:
+    m_Left: 0
+    m_Right: 0
+    m_Top: 0
+    m_Bottom: 0
+  m_ChildAlignment: 0
+  m_Spacing: 12
+  m_ChildForceExpandWidth: 1
+  m_ChildForceExpandHeight: 1
+  m_ChildControlWidth: 0
+  m_ChildControlHeight: 0
+  m_ChildScaleWidth: 0
+  m_ChildScaleHeight: 0
+  m_ReverseArrangement: 0
+--- !u!114 &1209465334
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209465330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6254f6ce704a4a448c7af06a9bf9d09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ViewModelName: PetOne.Ui.ViewModel.HealthViewModel
+  BindingMode: 0
+  SrcPropertyName: CurrentValue
+  DstPropertyName: CurrentValue
+  SrcPropertyPath: 
+  DstPropertyPath: 
+  DstView: {fileID: 1209465332}
+  Converter: {fileID: 0}
+  DstChangedEventName: 
+--- !u!114 &1209465335
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1209465330}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f6254f6ce704a4a448c7af06a9bf9d09, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  ViewModelName: PetOne.Ui.ViewModel.HealthViewModel
+  BindingMode: 0
+  SrcPropertyName: HeartCount
+  DstPropertyName: HeartCount
+  SrcPropertyPath: 
+  DstPropertyPath: 
+  DstView: {fileID: 1209465332}
+  Converter: {fileID: 0}
+  DstChangedEventName: 
 --- !u!1 &1261379719
 GameObject:
   m_ObjectHideFlags: 0
@@ -1332,6 +1456,7 @@ RectTransform:
   m_LocalScale: {x: 0, y: 0, z: 0}
   m_Children:
   - {fileID: 783568521}
+  - {fileID: 1209465331}
   m_Father: {fileID: 0}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -1459,7 +1584,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 20234
+  Id: 20358
   Position:
     x: 45
     y: 29.5
@@ -1579,7 +1704,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   GravityFactor: 9.81
-  Id: 20248
+  Id: 20372
   Position:
     x: 0
     y: 0

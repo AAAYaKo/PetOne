@@ -1,14 +1,16 @@
 using DataStructures.ViliWonka.KDTree;
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class ChangeNGravitySource : IEcsRunSystem
+    internal sealed class ChangeNGravitySource : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<ChangeSourceTag, RealTransform> _filter = null;
@@ -43,7 +45,7 @@ namespace Client
                 }
 
                 RaycastCommand
-                    .ScheduleBatch(commands, hits, 1)
+                    .ScheduleBatch(commands, hits, 6)
                     .Complete();
 
                 foreach (var i in _filter)

@@ -1,8 +1,8 @@
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct ForceImpulse
+    internal struct ForceImpulse
     {
         public float3 Value;
     }

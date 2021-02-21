@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct JumpData
+    internal struct JumpData
     {
         public float OldFactor;
         public bool IsInAir;

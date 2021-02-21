@@ -1,9 +1,11 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Linkers;
 using System.Collections.Generic;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class NGravitySourcesInit : IEcsPreInitSystem
+    internal sealed class NGravitySourcesInit : IEcsPreInitSystem
     {
         // auto-injected fields.
         private readonly EcsWorld _world = null;

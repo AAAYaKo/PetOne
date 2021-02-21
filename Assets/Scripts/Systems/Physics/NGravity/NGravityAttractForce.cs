@@ -1,15 +1,18 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class NGravityAttractForce : IEcsRunSystem
+    internal sealed class NGravityAttractForce : IEcsRunSystem
     {
         private const float SLERP_SPEED = 10;
 
         // auto-injected fields.
         private readonly EcsFilter<NGravityAttractor, PhysicBody, RealTransform>.Exclude<NGravityRotateToTag, WannaSleepTag> _filter = null;
+
 
         void IEcsRunSystem.Run()
         {

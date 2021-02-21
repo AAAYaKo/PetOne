@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct StaminaHideQuery
+    internal struct StaminaHideQuery
     {
         public float TimeToHide;
     }

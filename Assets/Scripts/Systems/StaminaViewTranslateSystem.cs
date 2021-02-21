@@ -1,9 +1,12 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
+using PetOne.Ui;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class StaminaViewTranslateSystem : IEcsRunSystem, IEcsInitSystem
+    internal sealed class StaminaViewTranslateSystem : IEcsRunSystem, IEcsInitSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<RealTransform, Stamina> _filter = null;
@@ -26,8 +29,8 @@ namespace Client
         {
             foreach (var i in _filter)
             {
-                Vector3 entityPosition = _filter.Get1(i).Value.position;
-                Vector3 cameraPosition = cameraTransform.position;
+                var entityPosition = _filter.Get1(i).Value.position;
+                var cameraPosition = cameraTransform.position;
                 if(entityPosition != oldEntityPosition || cameraPosition != oldCameraPosition)
                 {
                     repository.StaminaViewPosition = camera.WorldToScreenPoint(entityPosition);

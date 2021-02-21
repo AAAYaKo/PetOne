@@ -1,5 +1,6 @@
 using Leopotam.Ecs;
 
-namespace Client {
-    struct BlockMoveTag : IEcsIgnoreInFilter { }
+namespace PetOne.Components
+{
+    internal struct BlockMoveTag : IEcsIgnoreInFilter { }
 }

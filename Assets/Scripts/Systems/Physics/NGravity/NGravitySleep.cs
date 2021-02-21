@@ -1,9 +1,10 @@
 using Leopotam.Ecs;
+using PetOne.Components;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class NGravitySleep : IEcsRunSystem
+    internal sealed class NGravitySleep : IEcsRunSystem
     {
         private const float SLEEP_THRESHOLD = 0.0001f;
         private const float SLEEP_DELLAY = 1;
@@ -22,22 +23,22 @@ namespace Client
 
                 if (entity.Has<PhysicTranslation>())
                 {
-                    attractor.Time = 0;
+                    attractor.TimeToSleep = 0;
                     entity.Del<WannaSleepTag>();
                     continue;
                 }
 
                 bool wannaSleep = body.Value.velocity.sqrMagnitude <= SLEEP_THRESHOLD;
 
-                if (wannaSleep && (attractor.Time >= SLEEP_DELLAY))
+                if (wannaSleep && (attractor.TimeToSleep >= SLEEP_DELLAY))
                     entity.Get<WannaSleepTag>();
 
                 else if (wannaSleep)
-                    attractor.Time += delta;
+                    attractor.TimeToSleep += delta;
 
                 else
                 {
-                    attractor.Time = 0;
+                    attractor.TimeToSleep = 0;
                     entity.Del<WannaSleepTag>();
                 }
             }

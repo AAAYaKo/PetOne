@@ -1,21 +1,22 @@
 using Leopotam.Ecs;
-using Unity.Mathematics;
+using PetOne.Components;
 using UnityEngine;
 
-namespace Client 
+namespace PetOne.Systems
 {
-    sealed class PhysicTranslationSystem : IEcsRunSystem
+    internal sealed class PhysicTranslationSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<PhysicBody, PhysicTranslation, RealTransform> _filter = null;
         
+
         void IEcsRunSystem.Run ()
         {
             foreach (var i in _filter)
             {
-                float3 direction = _filter.Get2(i).Value;
-                float3 position = _filter.Get3(i).Value.position;
-                Rigidbody body = _filter.Get1(i).Value;
+                var direction = (Vector3)_filter.Get2(i).Value;
+                var position = _filter.Get3(i).Value.position;
+                var body = _filter.Get1(i).Value;
                 body.MovePosition(position + direction);
             }
         }

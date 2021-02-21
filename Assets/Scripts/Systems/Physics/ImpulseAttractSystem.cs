@@ -1,10 +1,11 @@
 using Leopotam.Ecs;
+using PetOne.Components;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class ImpulseAttractSystem : IEcsRunSystem
+    internal sealed class ImpulseAttractSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<ForceImpulse, PhysicBody> _filter;

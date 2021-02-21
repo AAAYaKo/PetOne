@@ -1,10 +1,12 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class SlerpRotateSystem : IEcsRunSystem
+    internal sealed class SlerpRotateSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<TargetRotation, RealTransform> _filter = null;

@@ -1,7 +1,11 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Linkers;
+using PetOne.Services;
+using PetOne.Systems;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Startups
 {
     sealed class EcsStartup : MonoBehaviour
     {
@@ -73,7 +77,7 @@ namespace Client
 
                 // register one-frame components
                 .OneFrame<ForceImpulse>()
-                .OneFrame<FactorReset>()
+                .OneFrame<FactorResetTag>()
                 .OneFrame<ChangeSourceTag>()
 
                 // inject service instances

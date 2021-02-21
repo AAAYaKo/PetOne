@@ -1,13 +1,16 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class TargetSpeedPercentChangeSystem : IEcsRunSystem
+    internal sealed class TargetSpeedPercentChangeSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<InputDirection, ViewComponent, TargetSpeedPercentChangedTag> _filter = null;
         private readonly InjectData _injectData = null;
+
 
         void IEcsRunSystem.Run()
         {

@@ -1,10 +1,13 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Linkers;
+using PetOne.Ui;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class InputSystem : IEcsInitSystem, IEcsDestroySystem
+    internal sealed class InputSystem : IEcsInitSystem, IEcsDestroySystem
     {
         private const string ATTACK_PROPERTY_NAME = "Attack";
         private const string EQUIP_PROPERTY_NAME = "Equip";
@@ -108,7 +111,7 @@ namespace Client
         private void OnJumpCanceled(InputAction.CallbackContext context)
         {
             foreach (var i in _filter1)
-                _filter1.GetEntity(i).Get<FactorReset>();
+                _filter1.GetEntity(i).Get<FactorResetTag>();
         }
         private void OnAttackPerformed(InputAction.CallbackContext context)
         {

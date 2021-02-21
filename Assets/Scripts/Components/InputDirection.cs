@@ -1,8 +1,8 @@
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct InputDirection
+    internal struct InputDirection
     {
         public float2 Value;
     }

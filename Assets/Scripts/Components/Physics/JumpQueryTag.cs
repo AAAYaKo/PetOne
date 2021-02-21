@@ -1,6 +1,6 @@
 using Leopotam.Ecs;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct JumpQueryTag : IEcsIgnoreInFilter { }
+    internal struct JumpQueryTag : IEcsIgnoreInFilter { }
 }

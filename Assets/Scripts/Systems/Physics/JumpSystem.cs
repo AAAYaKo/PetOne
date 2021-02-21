@@ -1,17 +1,18 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class JumpSystem : IEcsRunSystem
+    internal sealed class JumpSystem : IEcsRunSystem
     {
         private const string JUMP_PROPERTY_NAME = "Jump Rising";
-        private const int FAST_MULTIPLIER = 2;
-        private const int SLOW_MULTIPLIER = 1;
 
         // auto-injected fields.
         private readonly EcsFilter<ViewComponent, NGravityAttractor, JumpQueryTag>.Exclude<JumpData> _filter = null;
         private readonly InjectData _injectData = null;
+
 
         void IEcsRunSystem.Run()
         {
@@ -43,7 +44,7 @@ namespace Client
         private float3 GetForceVectorWithMovement(EcsEntity entity, float3 up, float force)
         {
             var translation = entity.Get<PhysicTranslation>();
-            float3 forceVector = up + math.normalize(translation.Value) * (entity.Has<RunTag>() ? FAST_MULTIPLIER : SLOW_MULTIPLIER);
+            float3 forceVector = up + math.normalize(translation.Value);
             forceVector = forceVector * force;
             return forceVector;
         }

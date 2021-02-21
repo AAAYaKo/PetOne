@@ -1,8 +1,8 @@
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct PhysicTranslation
+    internal struct PhysicTranslation
     {
         public float3 Value;
     }

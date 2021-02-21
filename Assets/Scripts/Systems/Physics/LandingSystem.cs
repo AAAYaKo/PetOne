@@ -1,12 +1,15 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class LandingSystem : IEcsRunSystem
+    internal sealed class LandingSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<NGravityAttractor, JumpData> _filter = null;
         private readonly InjectData _injectData = null;
+
 
         void IEcsRunSystem.Run()
         {

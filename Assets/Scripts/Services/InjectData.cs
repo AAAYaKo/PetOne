@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace Client
+namespace PetOne.Services
 {
     [CreateAssetMenu(fileName = "Config", menuName = "ScriptableObjects/Config")]
     public class InjectData : ScriptableObject
@@ -22,14 +22,26 @@ namespace Client
         public float StaminaRecoverySpeed;
         public float SpeedOfStaminaSpendOnRun;
         public float HideStaminaTime;
-        public Camera Camera;
-        public Transform CameraTransform;
-
-
-        private void OnEnable()
+        public Camera Camera
         {
-            Camera = Camera.main;
-            CameraTransform = Camera.transform;
+            get
+            {
+                if(_camera == null)
+                    _camera = Camera.main;
+                return _camera;
+            }
         }
+        public Transform CameraTransform
+        {
+            get
+            {
+                if (_cameraTransform == null)
+                    _cameraTransform = Camera.transform;
+                return _cameraTransform;
+            }
+        }
+
+        private Camera _camera;
+        private Transform _cameraTransform;
     }
 }

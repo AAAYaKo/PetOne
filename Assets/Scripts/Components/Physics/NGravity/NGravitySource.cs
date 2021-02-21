@@ -1,6 +1,6 @@
-namespace Client
+namespace PetOne.Components
 {
-    struct NGravitySource
+    internal struct NGravitySource
     {
         public float GravityFactor;
         public int Id;

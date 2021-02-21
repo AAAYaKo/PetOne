@@ -1,9 +1,12 @@
 using Leopotam.Ecs;
+using PetOne.Components;
+using PetOne.Services;
+using PetOne.Ui;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class StaminaRestorationSystem : IEcsRunSystem
+    internal sealed class StaminaRestorationSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<Stamina> _filter = null;

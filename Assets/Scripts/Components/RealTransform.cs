@@ -1,8 +1,8 @@
 using UnityEngine;
 
-namespace Client 
+namespace PetOne.Components 
 {
-    struct RealTransform 
+    internal struct RealTransform 
     {
         public Transform Value;
     }

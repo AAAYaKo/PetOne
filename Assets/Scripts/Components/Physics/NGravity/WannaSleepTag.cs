@@ -1,6 +1,6 @@
 using Leopotam.Ecs;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct WannaSleepTag : IEcsIgnoreInFilter { }
+    internal struct WannaSleepTag : IEcsIgnoreInFilter { }
 }

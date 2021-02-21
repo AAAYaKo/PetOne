@@ -1,8 +1,8 @@
 using Unity.Mathematics;
 
-namespace Client 
+namespace PetOne.Components 
 {
-    struct TargetRotation 
+    internal struct TargetRotation 
     {
         public quaternion Value;
     }

@@ -1,6 +1,6 @@
 using Leopotam.Ecs;
 
-namespace Client
+namespace PetOne.Components
 {
-    struct AttackTag : IEcsIgnoreInFilter { }
+    internal struct AttackTag : IEcsIgnoreInFilter { }
 }

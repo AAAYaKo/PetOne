@@ -1,16 +1,19 @@
 using Leopotam.Ecs;
-using Unity.Mathematics;
+using PetOne.Components;
+using PetOne.Services;
+using PetOne.Ui;
 using UnityEngine;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class StaminaSpendSystem : IEcsRunSystem
+    internal sealed class StaminaSpendSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<Stamina, InputDirection, RunTag>.Exclude<TiredTag, JumpData> _filter = null;
         private readonly InjectData _injectData = null;
 
         [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+
 
         void IEcsRunSystem.Run()
         {

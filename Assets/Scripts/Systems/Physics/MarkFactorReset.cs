@@ -1,12 +1,14 @@
 using Leopotam.Ecs;
+using PetOne.Components;
 using Unity.Mathematics;
 
-namespace Client
+namespace PetOne.Systems
 {
-    sealed class MarkFactorReset : IEcsRunSystem
+    internal sealed class MarkFactorReset : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<JumpData, PhysicBody, RealTransform> _filter = null;
+
 
         void IEcsRunSystem.Run()
         {
@@ -19,7 +21,7 @@ namespace Client
                 if (isntRising && isInAir)
                 {
                     EcsEntity entity = _filter.GetEntity(i);
-                    entity.Get<FactorReset>();
+                    entity.Get<FactorResetTag>();
                 }
             }
         }
