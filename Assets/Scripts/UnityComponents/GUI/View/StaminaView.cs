@@ -6,11 +6,11 @@ namespace PetOne.Ui.View
 {
     internal sealed class StaminaView : ViewBase
     {
-        [SerializeField] private Color normal;
-        [SerializeField] private Color tired;
+        [SerializeField] private Color _normal;
+        [SerializeField] private Color _tired;
         [SerializeField] private Image _image;
         [SerializeField] private RectTransform _staminaTransform;
-        [SerializeField] private Vector3 offcet;
+        [SerializeField] private Vector3 _offcet;
 
         public float Amount
         {
@@ -24,7 +24,7 @@ namespace PetOne.Ui.View
         {
             set
             {
-                _staminaTransform.position = value + offcet;
+                _staminaTransform.position = value + _offcet;
             }
         }
 
@@ -34,8 +34,8 @@ namespace PetOne.Ui.View
             {
                 _image.color = value switch
                 {
-                    true => tired,
-                    false => normal
+                    true => _tired,
+                    false => _normal
                 };
             }
         }

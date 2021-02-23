@@ -11,8 +11,7 @@ namespace PetOne.Systems
         // auto-injected fields.
         private readonly EcsFilter<Stamina, InputDirection, RunTag>.Exclude<TiredTag, JumpData> _filter = null;
         private readonly InjectData _injectData = null;
-
-        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+        private readonly PlayerStaminaModel _model = null;
 
 
         void IEcsRunSystem.Run()
@@ -31,10 +30,9 @@ namespace PetOne.Systems
                         entity.Del<RunTag>();
                         entity.Get<TiredTag>();
                         entity.Get<TargetSpeedPercentChangedTag>();
-                        repository.IsStaminaTired = true;
+                        _model.IsTired = true;
                     }
-
-                    repository.StaminaAmount = stamina.Amount;
+                    _model.Amount = stamina.Amount;
                 }
             }
         }

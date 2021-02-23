@@ -16,18 +16,17 @@ MonoBehaviour:
   NewGravitySourceScanRadiuce: 10
   SlerpToGravitySourceSpeed: 5
   DefaulFactor: 9.81
-  JumpFactor: 1.9620001
+  JumpFactor: 4.905
   SlerpRotateViewSpeed: 7
   SlowRunSpeed: 5.5
   FastRunSpeed: 11
   SlowRunPercent: 0.75
   FastRunPercent: 1
+  HeartCount: 3
   ToFootDistance: 0.682
   LerpAnimatorSpeed: 13
-  JumpForce: 3
+  JumpForce: 4
   StaminaAmount: 10
   StaminaRecoverySpeed: 3.5
   SpeedOfStaminaSpendOnRun: 4
   HideStaminaTime: 2
-  Camera: {fileID: 0}
-  CameraTransform: {fileID: 0}

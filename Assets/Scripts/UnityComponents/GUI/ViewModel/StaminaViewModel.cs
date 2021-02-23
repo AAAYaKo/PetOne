@@ -1,3 +1,4 @@
+using PetOne.Services;
 using System.ComponentModel;
 using UnityEngine;
 using UnityMVVM.ViewModel;
@@ -62,36 +63,37 @@ namespace PetOne.Ui.ViewModel
         private bool _isVisible;
         private float _amount;
         private Vector3 _position;
-        private readonly UiRepository _repository = UiRepository.Instance;
+        private PlayerStaminaModel _model;
 
 
-        private void OnEnable()
+        public void Bind(PlayerStaminaModel model)
         {
-            _repository.PropertyChanged += OnStaminaAmountChanged;
+            _model = model;
+            _model.PropertyChanged += OnPropertyChanged;
         }
 
-        private void OnDisable()
+        private void OnDestroy()
         {
-            _repository.PropertyChanged -= OnStaminaAmountChanged;
+            _model.PropertyChanged -= OnPropertyChanged;
         }
 
-        private void OnStaminaAmountChanged(object sender, PropertyChangedEventArgs e)
+        private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
             switch (e.PropertyName)
             {
                 default:
                     break;
-                case nameof(_repository.StaminaViewPosition):
-                    Position = _repository.StaminaViewPosition;
+                case nameof(PlayerStaminaModel.Amount):
+                    Amount = _model.Amount;
                     break;
-                case nameof(_repository.StaminaAmount):
-                    Amount = _repository.StaminaAmount;
+                case nameof(PlayerStaminaModel.IsTired):
+                    IsTired = _model.IsTired;
                     break;
-                case nameof(_repository.IsStaminaTired):
-                    IsTired = _repository.IsStaminaTired;
+                case nameof(PlayerStaminaModel.IsVisible):
+                    IsVisible = _model.IsVisible;
                     break;
-                case nameof(_repository.IsStaminaVisible):
-                    IsVisible = _repository.IsStaminaVisible;
+                case nameof(PlayerStaminaModel.Position):
+                    Position = _model.Position;
                     break;
             }
         }

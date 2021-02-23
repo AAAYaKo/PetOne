@@ -3,6 +3,7 @@ using PetOne.Components;
 using PetOne.Linkers;
 using PetOne.Services;
 using PetOne.Systems;
+using PetOne.Ui.ViewModel;
 using UnityEngine;
 
 namespace PetOne.Startups
@@ -18,16 +19,18 @@ namespace PetOne.Startups
 
         private PlayerConfig _player;
         private Inputs _inputs;
-        private AnimationEventsProvider _provider;
         private NGravitySourceConfig[] _sources;
+        private PlayerStaminaModel _staminaModel;
+        private PlayerHealthModel _healthModel;
 
 
         private void Awake()
         {
             _inputs = new Inputs();
             _player = FindObjectOfType<PlayerConfig>();
-            _provider = FindObjectOfType<AnimationEventsProvider>();
             _sources = FindObjectsOfType<NGravitySourceConfig>();
+            _staminaModel = new PlayerStaminaModel();
+            _healthModel = new PlayerHealthModel();
         }
 
         private void Start()
@@ -35,6 +38,9 @@ namespace PetOne.Startups
             _world = new EcsWorld();
             _update = new EcsSystems(_world);
             _fixedUpdate = new EcsSystems(_world);
+
+            FindObjectOfType<StaminaViewModel>().Bind(_staminaModel);
+            FindObjectOfType<HealthViewModel>().Bind(_healthModel);
 
 #if UNITY_EDITOR
             CreateInspector();
@@ -59,8 +65,9 @@ namespace PetOne.Startups
 
                 // inject
                 .Inject(_gravityLayer)
+                .Inject(_staminaModel)
+                .Inject(_healthModel)
                 .Inject(_injectData)
-                .Inject(_provider)
                 .Inject(_player)
                 .Inject(_inputs);
 
@@ -69,11 +76,11 @@ namespace PetOne.Startups
                 .AddNGravity()
                 .Add(new TranslationCalculateSystem())
                 .Add(new PhysicTranslationSystem())
-                .Add(new StaminaViewTranslateSystem())
                 .Add(new ImpulseAttractSystem())
                 .Add(new LandingSystem())
                 .Add(new MarkFactorReset())
                 .Add(new ResetNGravityFactor())
+                .Add(new StaminaViewTranslateSystem())
 
                 // register one-frame components
                 .OneFrame<ForceImpulse>()
@@ -82,6 +89,7 @@ namespace PetOne.Startups
 
                 // inject service instances
                 .Inject(_gravityLayer)
+                .Inject(_staminaModel)
                 .Inject(_injectData)
                 .Inject(_sources)
                 .Inject(_player);

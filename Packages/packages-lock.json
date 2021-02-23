@@ -5,14 +5,14 @@
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "e5edd6e007ccdb3725736c020a806bafdc6fb0c0"
+      "hash": "acd5873e57796ab5bfbe6c11c06fb044b912c6f9"
     },
     "com.leopotam.ecs-unityintegration": {
       "version": "https://github.com/Leopotam/ecs-unityintegration.git",
       "depth": 0,
       "source": "git",
       "dependencies": {},
-      "hash": "47a1a8ea26342894459ec478d56856c3f71a7cab"
+      "hash": "127d6a8f02ec987ac724a7fc671b1d5d00b0ea56"
     },
     "com.push-pop.unitymvvm": {
       "version": "https://github.com/push-pop/Unity-MVVM.git#upm",
@@ -32,7 +32,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.burst": {
-      "version": "1.4.4",
+      "version": "1.4.5",
       "depth": 0,
       "source": "registry",
       "dependencies": {
@@ -202,7 +202,7 @@
       "url": "https://packages.unity.com"
     },
     "com.unity.textmeshpro": {
-      "version": "3.0.3",
+      "version": "3.0.4",
       "depth": 0,
       "source": "registry",
       "dependencies": {

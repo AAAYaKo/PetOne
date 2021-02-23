@@ -1,7 +1,6 @@
 using Leopotam.Ecs;
 using PetOne.Components;
 using PetOne.Services;
-using PetOne.Ui;
 using UnityEngine;
 
 namespace PetOne.Systems
@@ -11,8 +10,7 @@ namespace PetOne.Systems
         // auto-injected fields.
         private readonly EcsFilter<Stamina> _filter = null;
         private readonly InjectData _injectData = null;
-
-        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+        private readonly PlayerStaminaModel _model = null;
 
 
         void IEcsRunSystem.Run()
@@ -32,12 +30,11 @@ namespace PetOne.Systems
                         {
                             stamina.Amount = amount;
                             entity.Del<TiredTag>();
-                            repository.IsStaminaTired = false;
                             ref var hide = ref entity.Get<StaminaHideQuery>();
                             hide.TimeToHide = _injectData.HideStaminaTime;
+                            _model.IsTired = false;
                         }
-
-                        repository.StaminaAmount = stamina.Amount;
+                        _model.Amount = stamina.Amount;
                     }
                 }
             }

@@ -11,7 +11,7 @@ namespace PetOne.Systems
         // auto-injected fields.
         private readonly EcsFilter<RealTransform, Stamina> _filter = null;
         private readonly InjectData _injectData = null;
-        [EcsIgnoreInject] private readonly UiRepository repository = UiRepository.Instance;
+        private readonly PlayerStaminaModel _model = null;
 
         [EcsIgnoreInject] private Camera camera;
         [EcsIgnoreInject] private Transform cameraTransform;
@@ -33,7 +33,7 @@ namespace PetOne.Systems
                 var cameraPosition = cameraTransform.position;
                 if(entityPosition != oldEntityPosition || cameraPosition != oldCameraPosition)
                 {
-                    repository.StaminaViewPosition = camera.WorldToScreenPoint(entityPosition);
+                    _model.Position = camera.WorldToScreenPoint(entityPosition);
                     oldEntityPosition = entityPosition;
                     oldCameraPosition = cameraPosition;
                 }
