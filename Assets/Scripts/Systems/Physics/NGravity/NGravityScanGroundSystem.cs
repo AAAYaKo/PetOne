@@ -32,12 +32,7 @@ namespace PetOne.Systems
                     commands[i] = NewComand(i);
 
                 handle = SpherecastCommand.ScheduleBatch(commands, hits, 4);
-                handle.Complete();
-
-                WriteToAttractors();
-
-                hits.Dispose();
-                commands.Dispose();
+                FinalizeJob();
             }
         }
 
@@ -49,12 +44,13 @@ namespace PetOne.Systems
             return new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
         }
 
-        private async void WriteToAttractors()
+        private async void FinalizeJob()
         {
             while (!handle.IsCompleted)
             {
                 await Task.Delay((int)math.round(Time.deltaTime));
             }
+            handle.Complete();
 
             foreach (var i in _filter)
             {
@@ -63,6 +59,9 @@ namespace PetOne.Systems
                 attractor.DistanceToGround = hits[i].distance;
                 _filter.GetEntity(i).Replace(attractor);
             }
+
+            hits.Dispose();
+            commands.Dispose();
         }
     }
 }
