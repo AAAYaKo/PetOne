@@ -15,7 +15,7 @@ namespace PetOne.Linkers
 
         private void OnValidate()
         {
-            gameObject.layer = 7;
+            gameObject.layer = Layer;
             Id = GetComponent<Collider>().GetInstanceID();
             Position = transform.position;
         }
