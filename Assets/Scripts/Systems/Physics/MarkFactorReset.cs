@@ -4,6 +4,9 @@ using Unity.Mathematics;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Autho mark factor reset by velocity of body
+    /// </summary>
     internal sealed class MarkFactorReset : IEcsRunSystem
     {
         // auto-injected fields.
@@ -14,14 +17,14 @@ namespace PetOne.Systems
         {
             foreach (var i in _filter)
             {
-                PhysicBody body = _filter.Get2(i);
-                float3 up = _filter.Get3(i).Value.up;
-                bool isInAir = _filter.Get1(i).IsInAir;
-                bool isntRising = math.dot(body.Value.velocity, up) <= 0;
-                if (isntRising && isInAir)
+                // Reset factor if entity in air
+                if (_filter.Get1(i).IsInAir)
                 {
-                    EcsEntity entity = _filter.GetEntity(i);
-                    entity.Get<FactorResetTag>();
+                    var body = _filter.Get2(i).Value;
+                    var up = _filter.Get3(i).Value.up;
+                    // Reset factor if entity is not rising
+                    if (math.dot(body.velocity, up) <= 0)
+                        _filter.GetEntity(i).Get<FactorResetTag>();
                 }
             }
         }

@@ -7,15 +7,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Unity.Collections;
 using Unity.Jobs;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace PetOne.Systems
 {
+    // TODO: Reduse allocation
+    /// <summary>
+    /// Change Custom Gravity Source by tag
+    /// </summary>
     internal sealed class ChangeNGravitySource : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<ChangeSourceTag, RealTransform> _filter = null;
+        private readonly EcsFilter<RealTransform, NGravityAttractor, ChangeSourceTag> _filter = null;
         private readonly LayerMask _gravityLayer = default;
         private readonly InjectData _injectData = null;
 
@@ -29,28 +32,35 @@ namespace PetOne.Systems
             int count = _filter.GetEntitiesCount();
             if (count != 0)
             {
+                // New Arrays
                 hits = new NativeArray<RaycastHit>(count, Allocator.TempJob);
                 commands = new NativeArray<RaycastCommand>(count, Allocator.TempJob);
+                // Fill input Array
                 foreach (var i in _filter)
                     commands[i] = NewComand(i);
-
-                handle = RaycastCommand.ScheduleBatch(commands, hits, 6);
-
+                // Schedule
+                handle = RaycastCommand.ScheduleBatch(commands, hits, 2);
+                // Finalize
                 FinalizeJob();
             }
         }
 
         private RaycastCommand NewComand(int index)
         {
-            var position = _filter.Get2(index).Value.position;
-            Vector3[] points = GetClosestPoints(position);
-
+            // Get Direction
+            var position = _filter.Get1(index).Value.position;
+            var points = GetClosestPoints(position);
             var point = GetClosestPoint(position, points);
             var dircetion = point - position;
-
+            // New Command
             return new RaycastCommand(position, dircetion, _injectData.NewGravitySourceScanRadiuce, _gravityLayer);
         }
 
+        /// <summary>
+        /// Get Closest points from closest colliders
+        /// </summary>
+        /// <param name="position"></param>
+        /// <returns></returns>
         private Vector3[] GetClosestPoints(Vector3 position)
         {
             var colliders = Physics.OverlapSphere(position, _injectData.NewGravitySourceScanRadiuce, _gravityLayer);
@@ -58,11 +68,17 @@ namespace PetOne.Systems
             return points;
         }
 
+        /// <summary>
+        /// Returns closest to position point from array
+        /// </summary>
+        /// <param name="position"></param>
+        /// <param name="points"></param>
+        /// <returns></returns>
         private Vector3 GetClosestPoint(Vector3 position, Vector3[] points)
         {
-            KDTree tree = new KDTree(points, 8);
-            KDQuery query = new KDQuery();
-            List<int> results = new List<int>();
+            var tree = new KDTree(points, 8);
+            var query = new KDQuery();
+            var results = new List<int>();
             query.ClosestPoint(tree, position, results);
 
             return points[results.First()];
@@ -70,21 +86,23 @@ namespace PetOne.Systems
 
         private async void FinalizeJob()
         {
+            // Await complet of the job
             while (!handle.IsCompleted)
             {
-                await Task.Delay((int)math.round(Time.deltaTime));
+                await Task.Delay(Mathf.FloorToInt(Time.deltaTime));
             }
             handle.Complete();
-
+            // Update Entities
             foreach (var i in _filter)
             {
-                EcsEntity entity = _filter.GetEntity(i);
+                var entity = _filter.GetEntity(i);
                 entity.Get<NGravityRotateToTag>();
-                NGravityAttractor attractor = entity.Get<NGravityAttractor>();
+                // Update normal
+                var attractor = _filter.Get2(i);
                 attractor.NormalToGround = hits[i].normal;
                 entity.Replace(attractor);
             }
-
+            // Dispose Arrays
             hits.Dispose();
             commands.Dispose();
         }

@@ -19,7 +19,6 @@ namespace PetOne.Ui.ViewModel
                 }
             }
         }
-
         public bool IsVisible
         {
             get => _isVisible;
@@ -32,7 +31,6 @@ namespace PetOne.Ui.ViewModel
                 }
             }
         }
-
         public float Amount
         {
             get => _amount;
@@ -45,7 +43,6 @@ namespace PetOne.Ui.ViewModel
                 }
             }
         }
-
         public Vector3 Position
         {
             get => _position;
@@ -66,6 +63,10 @@ namespace PetOne.Ui.ViewModel
         private PlayerStaminaModel _model;
 
 
+        /// <summary>
+        /// Subcribe the view model to the model
+        /// </summary>
+        /// <param name="model"></param>
         public void Bind(PlayerStaminaModel model)
         {
             _model = model;
@@ -74,26 +75,32 @@ namespace PetOne.Ui.ViewModel
 
         private void OnDestroy()
         {
+            // Unsubscribe
             _model.PropertyChanged -= OnPropertyChanged;
         }
 
         private void OnPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            // Update view model
             switch (e.PropertyName)
             {
-                default:
-                    break;
                 case nameof(PlayerStaminaModel.Amount):
                     Amount = _model.Amount;
                     break;
+
                 case nameof(PlayerStaminaModel.IsTired):
                     IsTired = _model.IsTired;
                     break;
+
                 case nameof(PlayerStaminaModel.IsVisible):
                     IsVisible = _model.IsVisible;
                     break;
+
                 case nameof(PlayerStaminaModel.Position):
                     Position = _model.Position;
+                    break;
+
+                default:
                     break;
             }
         }

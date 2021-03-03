@@ -6,10 +6,13 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
-    sealed class AnimatorWalkingSystem : IEcsRunSystem
+    /// <summary>
+    /// Lerp and update speed percent in animator
+    /// </summary>
+    internal sealed class AnimatorWalkingSystem : IEcsRunSystem
     {
-        private const string SPEED_FIELD_NAME = "SpeedPercent";
-        private const float APPROXIMATION = 0.000001f;
+        // names related to animator
+        private const string SPEED_PROPERTY_NAME = "SpeedPercent";
 
         // auto-injected fields.
         private readonly EcsFilter<ViewComponent> _filter = null;
@@ -18,7 +21,7 @@ namespace PetOne.Systems
 
         void IEcsRunSystem.Run()
         {
-            float delta = Time.deltaTime;
+            float delta = Time.deltaTime * _injectData.LerpAnimatorSpeed;
             foreach (var i in _filter)
             {
                 ref var view = ref _filter.Get1(i);
@@ -29,11 +32,11 @@ namespace PetOne.Systems
         private void LerpSpeedPercent(float delta, int index, ViewComponent view)
         {
             float to = _filter.Get1(index).TargetSpeedPercent;
-            float from = view.Animator.GetFloat(SPEED_FIELD_NAME);
-            if (math.abs(to - from) > APPROXIMATION)
+            float from = view.Animator.GetFloat(SPEED_PROPERTY_NAME);
+            if (!Mathf.Approximately(from, to))
             {
-                float lerp = math.lerp(from, to, delta * _injectData.LerpAnimatorSpeed);
-                view.Animator.SetFloat(SPEED_FIELD_NAME, lerp);
+                float lerp = math.lerp(from, to, delta);
+                view.Animator.SetFloat(SPEED_PROPERTY_NAME, lerp);
             }
         }
     }

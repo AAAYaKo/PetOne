@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
+    // TODO: It can be rewrited to DOTween
+    /// <summary>
+    /// By tag rotates attractor to new source (Animation)
+    /// </summary>
     internal sealed class NGravityRotateToNewSource : IEcsRunSystem
     {
         private const float APPROXIMATION = 0.99f;
@@ -23,11 +27,12 @@ namespace PetOne.Systems
             {
                 ref var attractor = ref _filter.Get1(i);
                 var transform = _filter.Get2(i).Value;
-                float3 up = transform.up;
-                float3 upTarget = attractor.NormalToGround;
+                // Rotation animation
+                var up = transform.up;
+                var upTarget = attractor.NormalToGround;
                 var angle = Calculate.FromToRotation(up, upTarget);
                 transform.rotation = math.slerp(transform.rotation, angle * transform.rotation, delta);
-
+                // End rotation (Animation)
                 if (math.dot(up, upTarget) > APPROXIMATION)
                     _filter.GetEntity(i).Del<NGravityRotateToTag>();
             }

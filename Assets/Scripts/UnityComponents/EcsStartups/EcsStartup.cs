@@ -12,11 +12,11 @@ namespace PetOne.Startups
     {
         [SerializeField] private InjectData _injectData;
         [SerializeField] private LayerMask _gravityLayer = 7;
-
+        // Ecs fields
         private EcsWorld _world;
         private EcsSystems _update;
         private EcsSystems _fixedUpdate;
-
+        // Data for inject
         private PlayerConfig _player;
         private Inputs _inputs;
         private NGravitySourceConfig[] _sources;
@@ -29,86 +29,34 @@ namespace PetOne.Startups
             _inputs = new Inputs();
             _player = FindObjectOfType<PlayerConfig>();
             _sources = FindObjectsOfType<NGravitySourceConfig>();
+            // New models
             _staminaModel = new PlayerStaminaModel();
             _healthModel = new PlayerHealthModel();
+            // Creeate Ecs
+            _world = new EcsWorld();
+            _update = new EcsSystems(_world);
+            _fixedUpdate = new EcsSystems(_world);
         }
 
         private void Start()
         {
-            _world = new EcsWorld();
-            _update = new EcsSystems(_world);
-            _fixedUpdate = new EcsSystems(_world);
-
+            // Bind models to view models
             FindObjectOfType<StaminaViewModel>().Bind(_staminaModel);
             FindObjectOfType<HealthViewModel>().Bind(_healthModel);
 
 #if UNITY_EDITOR
             CreateInspector();
 #endif
-            _update
-                // register systems
-                .Add(new PlayerInitSystem())
-                .Add(new InputSystem())
-                .Add(new JumpSystem())
-                .Add(new SlerpRotateSystem())
-                .Add(new AnimatorLandingSystem())
-                .Add(new AnimatorWalkingSystem())
-                .Add(new StaminaSpendSystem())
-                .Add(new StaminaRestorationSystem())
-                .Add(new StaminaHideSystem())
-                .Add(new TargetSpeedPercentChangeSystem())
-
-                // register one-frame components
-                .OneFrame<JumpQueryTag>()
-                .OneFrame<LandedTag>()
-                .OneFrame<TargetSpeedPercentChangedTag>()
-
-                // inject
-                .Inject(_gravityLayer)
-                .Inject(_staminaModel)
-                .Inject(_healthModel)
-                .Inject(_injectData)
-                .Inject(_player)
-                .Inject(_inputs);
-
-            _fixedUpdate
-                // register systems
-                .AddNGravity()
-                .Add(new TranslationCalculateSystem())
-                .Add(new PhysicTranslationSystem())
-                .Add(new ImpulseAttractSystem())
-                .Add(new LandingSystem())
-                .Add(new MarkFactorReset())
-                .Add(new ResetNGravityFactor())
-                .Add(new StaminaViewTranslateSystem())
-
-                // register one-frame components
-                .OneFrame<ForceImpulse>()
-                .OneFrame<FactorResetTag>()
-                .OneFrame<ChangeSourceTag>()
-
-                // inject service instances
-                .Inject(_gravityLayer)
-                .Inject(_staminaModel)
-                .Inject(_injectData)
-                .Inject(_sources)
-                .Inject(_player);
-
+            // Prepare systems
+            PrepareUpdateSystems();
+            PrepareFixedUpdateSystems();
+            // Merge systems
             _update.ProcessInjects();
             _fixedUpdate.ProcessInjects();
-
+            // Init systems
             _fixedUpdate.Init();
             _update.Init();
         }
-
-#if UNITY_EDITOR
-        private void CreateInspector()
-        {
-            Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_world);
-            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_update);
-            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_fixedUpdate);
-        }
-#endif
 
         private void Update()
         {
@@ -149,10 +97,77 @@ namespace PetOne.Startups
             }
         }
 
+        private void PrepareUpdateSystems()
+        {
+            _update
+                // register systems
+                .Add(new PlayerInitSystem())
+                .Add(new InputSystem())
+                .Add(new JumpSystem())
+                .Add(new SlerpRotateSystem())
+                .Add(new AnimatorLandingSystem())
+                .Add(new AnimatorWalkingSystem())
+                .Add(new StaminaSpendSystem())
+                .Add(new StaminaRestorationSystem())
+                .Add(new StaminaHideSystem())
+                .Add(new TargetSpeedPercentChangeSystem())
+
+                // register one-frame components
+                .OneFrame<JumpQueryTag>()
+                .OneFrame<LandedTag>()
+                .OneFrame<TargetSpeedPercentChangedTag>()
+
+                // inject
+                .Inject(_gravityLayer)
+                .Inject(_staminaModel)
+                .Inject(_healthModel)
+                .Inject(_injectData)
+                .Inject(_player)
+                .Inject(_inputs);
+        }
+
+        private void PrepareFixedUpdateSystems()
+        {
+            _fixedUpdate
+                // register systems
+                .AddNGravity()
+                .Add(new TranslationCalculateSystem())
+                .Add(new PhysicTranslationSystem())
+                .Add(new AddImpulseSystem())
+                .Add(new LandingSystem())
+                .Add(new MarkFactorReset())
+                .Add(new ResetNGravityFactor())
+                .Add(new StaminaViewTranslateSystem())
+
+                // register one-frame components
+                .OneFrame<ForceImpulse>()
+                .OneFrame<FactorResetTag>()
+
+                // inject service instances
+                .Inject(_gravityLayer)
+                .Inject(_staminaModel)
+                .Inject(_injectData)
+                .Inject(_sources)
+                .Inject(_player);
+        }
+
+#if UNITY_EDITOR
+        private void CreateInspector()
+        {
+            Leopotam.Ecs.UnityIntegration.EcsWorldObserver.Create(_world);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_update);
+            Leopotam.Ecs.UnityIntegration.EcsSystemsObserver.Create(_fixedUpdate);
+        }
+#endif
     }
 
     internal static class SystemsExtentions
     {
+        /// <summary>
+        /// Add Custom NGravity to systems
+        /// </summary>
+        /// <param name="systems"></param>
+        /// <returns></returns>
         public static EcsSystems AddNGravity(this EcsSystems systems)
         {
             systems
@@ -161,7 +176,8 @@ namespace PetOne.Startups
                 .Add(new NGravityScanGroundSystem())
                 .Add(new NGravityAttractForce())
                 .Add(new ChangeNGravitySource())
-                .Add(new NGravityRotateToNewSource());
+                .Add(new NGravityRotateToNewSource())
+                .OneFrame<ChangeSourceTag>();
             return systems;
         }
     }

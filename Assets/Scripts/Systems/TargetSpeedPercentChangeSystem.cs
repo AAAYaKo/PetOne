@@ -5,6 +5,9 @@ using Unity.Mathematics;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Updates target speed percent by tag
+    /// </summary>
     internal sealed class TargetSpeedPercentChangeSystem : IEcsRunSystem
     {
         // auto-injected fields.
@@ -19,8 +22,7 @@ namespace PetOne.Systems
                 float moveScale = math.length(_filter.Get1(i).Value);
                 ref var view = ref _filter.Get2(i);
                 var entity = _filter.GetEntity(i);
-                view.TargetSpeedPercent = moveScale * (entity.Has<RunTag>() && !entity.Has<TiredTag>() ? 
-                    _injectData.FastRunPercent : _injectData.SlowRunPercent);
+                view.TargetSpeedPercent = moveScale * (entity.Has<RunTag>() ? _injectData.FastRunPercent : _injectData.SlowRunPercent);
             }
         }
     }

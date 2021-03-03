@@ -1,11 +1,13 @@
 using Leopotam.Ecs;
 using PetOne.Components;
-using Unity.Mathematics;
 using UnityEngine;
 
 namespace PetOne.Systems
 {
-    internal sealed class ImpulseAttractSystem : IEcsRunSystem
+    /// <summary>
+    /// Add impulse to body
+    /// </summary>
+    internal sealed class AddImpulseSystem : IEcsRunSystem
     {
         // auto-injected fields.
         private readonly EcsFilter<ForceImpulse, PhysicBody> _filter;
@@ -14,8 +16,8 @@ namespace PetOne.Systems
         {
             foreach (var i in _filter)
             {
-                Rigidbody body = _filter.Get2(i).Value;
-                float3 force = _filter.Get1(i).Value * body.mass;
+                var body = _filter.Get2(i).Value;
+                var force = _filter.Get1(i).Value * body.mass;
                 body.AddForce(force, ForceMode.Impulse);
             }
         }

@@ -15,6 +15,7 @@ namespace PetOne.Services
         public float FastRunSpeed;
         public float SlowRunPercent = 0.75f;
         public float FastRunPercent = 1;
+        public int HeartCount;
         public float ToFootDistance;
         public float LerpAnimatorSpeed;
         public float JumpForce;

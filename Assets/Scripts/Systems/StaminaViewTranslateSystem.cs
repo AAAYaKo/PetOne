@@ -1,11 +1,13 @@
 using Leopotam.Ecs;
 using PetOne.Components;
 using PetOne.Services;
-using PetOne.Ui;
 using UnityEngine;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Translate view to new position related to player position and camera view
+    /// </summary>
     internal sealed class StaminaViewTranslateSystem : IEcsRunSystem, IEcsInitSystem
     {
         // auto-injected fields.
@@ -21,21 +23,23 @@ namespace PetOne.Systems
 
         public void Init()
         {
+            // Cash links
             camera = _injectData.Camera;
             cameraTransform = _injectData.CameraTransform;
         }
 
         void IEcsRunSystem.Run()
         {
+            var cameraPosition = cameraTransform.position;
             foreach (var i in _filter)
             {
                 var entityPosition = _filter.Get1(i).Value.position;
-                var cameraPosition = cameraTransform.position;
                 if(entityPosition != oldEntityPosition || cameraPosition != oldCameraPosition)
                 {
-                    _model.Position = camera.WorldToScreenPoint(entityPosition);
+                    // Update positions
                     oldEntityPosition = entityPosition;
                     oldCameraPosition = cameraPosition;
+                    _model.Position = camera.WorldToScreenPoint(entityPosition);
                 }
             }
         }

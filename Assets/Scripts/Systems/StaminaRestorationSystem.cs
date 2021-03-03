@@ -5,10 +5,13 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Restore stamina if it's not spent
+    /// </summary>
     internal sealed class StaminaRestorationSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<Stamina> _filter = null;
+        private readonly EcsFilter<Stamina>.Exclude<RunTag> _filter = null;
         private readonly InjectData _injectData = null;
         private readonly PlayerStaminaModel _model = null;
 
@@ -20,22 +23,23 @@ namespace PetOne.Systems
             foreach (var i in _filter)
             {
                 var entity = _filter.GetEntity(i);
-                if(!entity.Has<RunTag>() || !entity.Has<InputDirection>())
+                ref var stamina = ref _filter.Get1(i);
+
+                if (stamina.Amount != amount)
                 {
-                    ref var stamina = ref _filter.Get1(i);
-                    if(stamina.Amount != amount)
+                    // Restore stamina
+                    stamina.Amount += stamina.RecoverySpeed * delta;
+                    if (stamina.Amount >= amount)
                     {
-                        stamina.Amount += stamina.RecoverySpeed * delta;
-                        if(stamina.Amount >= amount)
-                        {
-                            stamina.Amount = amount;
-                            entity.Del<TiredTag>();
-                            ref var hide = ref entity.Get<StaminaHideQuery>();
-                            hide.TimeToHide = _injectData.HideStaminaTime;
-                            _model.IsTired = false;
-                        }
-                        _model.Amount = stamina.Amount;
+                        stamina.Amount = amount;
+                        // Not tired
+                        entity.Del<TiredTag>();
+                        _model.IsTired = false;
+                        // Hide stamina
+                        ref var hide = ref entity.Get<StaminaHideQuery>();
+                        hide.TimeToHide = _injectData.HideStaminaTime;
                     }
+                    _model.Amount = stamina.Amount;
                 }
             }
         }

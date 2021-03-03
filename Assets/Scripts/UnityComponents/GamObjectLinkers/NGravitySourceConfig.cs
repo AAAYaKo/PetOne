@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace PetOne.Linkers
 {
-    [RequireComponent(typeof(Collider)), AddComponentMenu("CustomGravity/NGravitySourceTag"), ExecuteInEditMode]
+    [RequireComponent(typeof(Collider)), AddComponentMenu("CustomGravity/NGravitySourceTag")]
     internal sealed class NGravitySourceConfig : MonoBehaviour
     {
         public float GravityFactor = 9.81f;
@@ -11,19 +11,9 @@ namespace PetOne.Linkers
         public float3 Position;
 
 #if UNITY_EDITOR
-        public int Layer = 7;
+        [SerializeField] private int Layer = 7;
 
-        private void Awake()
-        {
-            Refresh();
-        }
-
-        private void Update()
-        {
-            Refresh();
-        }
-
-        private void Refresh()
+        private void OnValidate()
         {
             gameObject.layer = 7;
             Id = GetComponent<Collider>().GetInstanceID();

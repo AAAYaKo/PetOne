@@ -27,7 +27,7 @@ namespace PetOne.Ui.View
                 _staminaTransform.position = value + _offcet;
             }
         }
-
+        // TODO: rewrite to BoolToColorConverter
         public bool IsTired
         {
             set

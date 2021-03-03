@@ -9,6 +9,9 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Scans ground colliders and writes data to Attractors
+    /// </summary>
     internal sealed class NGravityScanGroundSystem : IEcsRunSystem
     {
         // auto-injected fields.
@@ -26,40 +29,44 @@ namespace PetOne.Systems
             int count = _filter.GetEntitiesCount();
             if (count != 0)
             {
+                // New Arrays
                 hits = new NativeArray<RaycastHit>(count, Allocator.TempJob);
                 commands = new NativeArray<SpherecastCommand>(count, Allocator.TempJob);
+                // Fill input Array
                 foreach (var i in _filter)
                     commands[i] = NewComand(i);
-
+                // Schedule
                 handle = SpherecastCommand.ScheduleBatch(commands, hits, 4);
+                // Finalize
                 FinalizeJob();
             }
         }
 
         private SpherecastCommand NewComand(int i)
         {
-            Transform transform = _filter.Get1(i).Value;
-            float3 position = transform.position;
-            float3 direction = -transform.up;
+            var transform = _filter.Get1(i).Value;
+            var position = transform.position;
+            var direction = -transform.up;
             return new SpherecastCommand(position, _injectData.RadiusOfGroundScan, direction, layerMask: _gravityLayer);
         }
 
         private async void FinalizeJob()
         {
+            // Await complete of the job
             while (!handle.IsCompleted)
             {
                 await Task.Delay((int)math.round(Time.deltaTime));
             }
             handle.Complete();
-
+            // Write data to attractors
             foreach (var i in _filter)
             {
-                NGravityAttractor attractor = _filter.Get2(i);
+                var attractor = _filter.Get2(i);
                 attractor.NormalToGround = hits[i].normal;
                 attractor.DistanceToGround = hits[i].distance;
                 _filter.GetEntity(i).Replace(attractor);
             }
-
+            // Dispose Arrays
             hits.Dispose();
             commands.Dispose();
         }

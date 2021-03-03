@@ -3,20 +3,24 @@ using PetOne.Components;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Reset Animation on Landing
+    /// </summary>
     internal sealed class AnimatorLandingSystem : IEcsRunSystem
     {
-        private const string JUMP_FIELD_NAME = "Jump Rising";
+        // names related to animator
+        private const string JUMP_PROPERTY_NAME = "Jump Rising";
 
         // auto-injected fields.
-        private readonly EcsFilter<LandedTag, ViewComponent> _filter = null;
+        private readonly EcsFilter<ViewComponent, LandedTag> _filter = null;
 
 
         void IEcsRunSystem.Run()
         {
             foreach (var i in _filter)
             {
-                ref var view = ref _filter.Get2(i);
-                view.Animator.SetBool(JUMP_FIELD_NAME, false);
+                ref var view = ref _filter.Get1(i);
+                view.Animator.SetBool(JUMP_PROPERTY_NAME, false);
             }
         }
     }

@@ -1,4 +1,5 @@
 using Leopotam.Ecs;
+using PetOne.Linkers;
 using UnityEngine;
 
 namespace PetOne.Components
@@ -7,6 +8,7 @@ namespace PetOne.Components
     {
         public EcsEntity Entity;
         public Animator Animator;
+        public AnimationEventsProvider EventsProvider;
         public float TargetSpeedPercent;
     }
 }

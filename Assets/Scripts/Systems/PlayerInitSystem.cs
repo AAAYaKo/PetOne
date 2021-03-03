@@ -5,6 +5,9 @@ using PetOne.Services;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Init player entities and components
+    /// </summary>
     internal sealed class PlayerInitSystem : IEcsInitSystem
     {
         private const int HEALTH_PER_HEART = 4;
@@ -83,7 +86,7 @@ namespace PetOne.Systems
 
         private void ColliderInit(EcsEntity player)
         {
-            ref var collider = ref player.Get<Components.Collider>();
+            ref var collider = ref player.Get<Collider>();
             collider.Provider = _playerConfig.CollisionProvider;
             collider.Reference = _playerConfig.Collider;
         }

@@ -4,10 +4,13 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Move position body by physic translation
+    /// </summary>
     internal sealed class PhysicTranslationSystem : IEcsRunSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<PhysicBody, PhysicTranslation, RealTransform> _filter = null;
+        private readonly EcsFilter<PhysicBody, PhysicTranslation, RealTransform>.Exclude<BlockMoveTag> _filter = null;
         
 
         void IEcsRunSystem.Run ()

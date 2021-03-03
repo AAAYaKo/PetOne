@@ -5,6 +5,10 @@ using System.Collections.Generic;
 
 namespace PetOne.Systems
 {
+    // TODO: Remove not used
+    /// <summary>
+    /// Init new Gravity soures
+    /// </summary>
     internal sealed class NGravitySourcesInit : IEcsPreInitSystem
     {
         // auto-injected fields.

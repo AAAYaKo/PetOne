@@ -2,14 +2,17 @@ using Leopotam.Ecs;
 using PetOne.Components;
 using PetOne.Linkers;
 using PetOne.Services;
-using PetOne.Ui.ViewModel;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Subscribe and Unsubcribe to input events
+    /// </summary>
     internal sealed class InputSystem : IEcsInitSystem, IEcsDestroySystem
     {
+        // names related to player animator
         private const string ATTACK_PROPERTY_NAME = "Attack";
         private const string EQUIP_PROPERTY_NAME = "Equip";
         private const string DISARM_PROPERTY_NAME = "Disarm";
@@ -24,6 +27,7 @@ namespace PetOne.Systems
 
         public void Init()
         {
+            // Subscribe
             _inputs.Player.Move.performed += OnMovePerformed;
             _inputs.Player.Move.canceled += OnMoveCanceled;
             _inputs.Player.Run.performed += OnRunPerformed;
@@ -39,6 +43,7 @@ namespace PetOne.Systems
 
         public void Destroy()
         {
+            // Unsubscribe
             _inputs.Player.Move.performed -= OnMovePerformed;
             _inputs.Player.Move.canceled -= OnMoveCanceled;
             _inputs.Player.Run.performed -= OnRunPerformed;
@@ -57,6 +62,7 @@ namespace PetOne.Systems
         {
             var inputDirection = context.ReadValue<Vector2>();
 
+            // Write input
             foreach (var i in _filter)
             {
                 var entity = _filter.GetEntity(i);
@@ -69,6 +75,7 @@ namespace PetOne.Systems
 
         private void OnMoveCanceled(InputAction.CallbackContext context)
         {
+            // Reset input
             foreach (var i in _filter)
             {
                 ref var entity = ref _filter.GetEntity(i);
@@ -87,6 +94,7 @@ namespace PetOne.Systems
             foreach (var i in _filter)
             {
                 var entity = _filter.GetEntity(i);
+                // Run
                 if (entity.Has<InputDirection>() && !entity.Has<TiredTag>() && !entity.Has<JumpData>())
                 {
                     entity.Get<TargetSpeedPercentChangedTag>();
@@ -101,23 +109,24 @@ namespace PetOne.Systems
             foreach (var i in _filter)
             {
                 var entity = _filter.GetEntity(i);
+                // Cancel run
                 if (entity.Has<RunTag>())
                 {
                     entity.Del<RunTag>();
                     entity.Get<TargetSpeedPercentChangedTag>();
                 }
-                else
+                // Disarm
+                else if (entity.Has<ArmedTag>() && !entity.Has<AttackTag>())
                 {
-                    if (entity.Has<ArmedTag>() && !entity.Has<AttackTag>())
-                    {
-                        entity.Del<ArmedTag>();
-                        var view = _filter.Get1(i);
-                        view.Animator.SetTrigger(DISARM_PROPERTY_NAME);
-                        entity.Get<BlockMoveTag>();
-                    }
-                    else if(!entity.Has<BlockMoveTag>() && !entity.Has<ArmedTag>())
-                        entity.Get<JumpQueryTag>();
+                    entity.Del<ArmedTag>();
+                    var view = _filter.Get1(i);
+                    entity.Get<BlockMoveTag>();
+                    view.Animator.SetTrigger(DISARM_PROPERTY_NAME);
                 }
+                // Jump
+                else if (!entity.Has<BlockMoveTag>() && !entity.Has<ArmedTag>())
+                    entity.Get<JumpQueryTag>();
+
             }
         }
 
@@ -132,21 +141,18 @@ namespace PetOne.Systems
             foreach (var i in _filter)
             {
                 var entity = _filter.GetEntity(i);
-                if (!entity.Has<ArmedTag>() && !entity.Has<BlockMoveTag>())
+                bool armered = entity.Has<ArmedTag>();
+                // Eqip
+                if (!armered && !entity.Has<BlockMoveTag>())
                 {
                     var view = _filter.Get1(i);
-                    entity.Del<PhysicTranslation>();
                     entity.Get<BlockMoveTag>();
                     view.Animator.SetTrigger(EQUIP_PROPERTY_NAME);
                 }
-            }
-            foreach (var i in _filter)
-            {
-                var entity = _filter.GetEntity(i);
-                if(entity.Has<ArmedTag>() && !entity.Has<AttackTag>())
+                // Attack
+                else if (armered && !entity.Has<AttackTag>())
                 {
                     var view = _filter.Get1(i);
-                    entity.Del<PhysicTranslation>();
                     entity.Get<AttackTag>();
                     entity.Get<BlockMoveTag>();
                     view.Animator.SetTrigger(ATTACK_PROPERTY_NAME);
@@ -158,6 +164,7 @@ namespace PetOne.Systems
         {
             switch (context.StringParameter)
             {
+                // On the End of Attack
                 case ATTACK_EVENT_NAME:
                     foreach (var i in _filter)
                     {
@@ -167,6 +174,7 @@ namespace PetOne.Systems
                     }
                     break;
 
+                // On the End of Equip
                 case EQUIP_EVENT_NAME:
                     foreach (var i in _filter)
                     {
@@ -179,6 +187,7 @@ namespace PetOne.Systems
                     }
                     break;
 
+                // On the End of Disarm
                 case DISARM_EVENT_NAME:
                     foreach (var i in _filter)
                     {

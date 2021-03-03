@@ -6,10 +6,13 @@ using UnityEngine;
 
 namespace PetOne.Systems
 {
+    /// <summary>
+    /// Calculate float3 translation and quaternion rotation from float 2 input and local up vector
+    /// </summary>
     internal sealed class TranslationCalculateSystem : IEcsRunSystem, IEcsInitSystem
     {
         // auto-injected fields.
-        private readonly EcsFilter<InputDirection, RealTransform, ViewComponent>.Exclude<JumpData> _filter = null;
+        private readonly EcsFilter<InputDirection, RealTransform, ViewComponent>.Exclude<JumpData, BlockMoveTag> _filter = null;
         private readonly InjectData _injectData = null;
 
         [EcsIgnoreInject] private Transform camera;
@@ -34,33 +37,31 @@ namespace PetOne.Systems
 
             foreach (var i in _filter)
             {
-                EcsEntity entity = _filter.GetEntity(i);
+                //Get player Entity
+                var entity = _filter.GetEntity(i);
 
-                if (entity.Has<BlockMoveTag>())
-                    entity.Del<PhysicTranslation>();
-                else
-                {
-                    var direction = _filter.Get1(i).Value;
-                    var transform = _filter.Get2(i).Value;
-                    var up = transform.up;
+                // Get data
+                var direction = _filter.Get1(i).Value;
+                var transform = _filter.Get2(i).Value;
+                var up = transform.up;
+                // Calculate and aply translatin
+                ref var physicTranslation = ref entity.Get<PhysicTranslation>();
+                var translation = CalculateTranslation(up, direction);
+                physicTranslation.Value = translation * (entity.Has<RunTag>() && !entity.Has<TiredTag>() ? fastDeltaSpeed : slowDeltaSpeed);
+                // Change Entity to View Entity
+                entity = _filter.Get3(i).Entity;
+                // Update target rotation
+                var rotation = quaternion.LookRotation(translation, up);
+                ref var target = ref entity.Get<TargetRotation>();
+                target.Value = rotation;
 
-                    float3 translation = CalculateTranslation(up, direction);
-                    ref var physicTranslation = ref entity.Get<PhysicTranslation>();
-
-                    physicTranslation.Value = translation * (entity.Has<RunTag>() && !entity.Has<TiredTag>() ? fastDeltaSpeed : slowDeltaSpeed);
-
-                    entity = _filter.Get3(i).Entity;
-                    quaternion rotation = quaternion.LookRotation(translation, up);
-                    ref var target = ref entity.Get<TargetRotation>();
-                    target.Value = rotation;
-                }
             }
         }
 
         private float3 CalculateTranslation(float3 up, float2 direction)
         {
-            float3 calculatedRight = ProjetOnPlain(right, up) * direction.x;
-            float3 calculatedForward = ProjetOnPlain(forward, up) * direction.y;
+            var calculatedRight = ProjetOnPlain(right, up) * direction.x;
+            var calculatedForward = ProjetOnPlain(forward, up) * direction.y;
 
             return calculatedRight + calculatedForward;
         }
